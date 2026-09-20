@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="advertisingonaspdotnet/advertisingonaspdotnet.Api.csproj" />
+  <Project Path="advertisingonaspdotnet/Tests/advertisingonaspdotnet.Tests.csproj" />
+</Solution>

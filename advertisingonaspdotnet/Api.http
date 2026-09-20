@@ -1,0 +1,5 @@
+@advertisingonaspdotnet.Api_HostAddress = http://localhost:5076
+
+GET {{advertisingonaspdotnet.Api_HostAddress}}/
+Accept: application/json
+
