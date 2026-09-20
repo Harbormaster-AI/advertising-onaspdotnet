@@ -10,14 +10,14 @@ public class DeviceCriterion
 public virtual TargetingProfile? TargetingProfile { get; set; } 
  public virtual DeviceType? DeviceType { get; set; } 
  public virtual PlatformType? PlatformType { get; set; } 
- public virtual TargetingOperator? Operator { get; set; } 
+ public virtual TargetingOperator? Operator_ { get; set; } 
 
     public static DeviceCriterion FromRequest(DeviceCriterionRequest request) {
         return new DeviceCriterion {
             Id = request.Id,
             DeviceType = request.DeviceType,
             PlatformType = request.PlatformType,
-            Operator = request.Operator,
+            Operator_ = request.Operator_,
         };
     }
 }

@@ -293,7 +293,7 @@ public class DeviceCriterionRequest {
     public Guid Id { get; set; } = Guid.NewGuid();
  public virtual DeviceType? DeviceType { get; set; } 
  public virtual PlatformType? PlatformType { get; set; } 
- public virtual TargetingOperator? Operator { get; set; } 
+ public virtual TargetingOperator? Operator_ { get; set; } 
 }
 
 public class DeviceCriterionResponse : DeviceCriterionRequest {
@@ -302,7 +302,7 @@ public class DeviceCriterionResponse : DeviceCriterionRequest {
             Id = model.Id,
             DeviceType = model.DeviceType,
             PlatformType = model.PlatformType,
-            Operator = model.Operator,
+            Operator_ = model.Operator_,
         };
     }
 }
@@ -543,7 +543,7 @@ public class TrackingPixelResponse : TrackingPixelRequest {
 
 public class ConversionEventRequest {
     public Guid Id { get; set; } = Guid.NewGuid();
- public virtual DateTime? Timestamp { get; set; } 
+ public virtual DateTime_? Timestamp { get; set; } 
  public virtual Money? Value { get; set; } 
  public virtual ConversionEventType? EventType { get; set; } 
  public virtual AttributionModel? AttributionModel { get; set; } 
@@ -582,7 +582,7 @@ public class PerformanceMetricResponse : PerformanceMetricRequest {
 public class ReportRequest {
     public Guid Id { get; set; } = Guid.NewGuid();
  public virtual string? ReportName { get; set; } 
- public virtual DateTime? GeneratedAt { get; set; } 
+ public virtual DateTime_? GeneratedAt { get; set; } 
  public virtual URL? FileUrl { get; set; } 
  public virtual ReportType? ReportType { get; set; } 
 }

@@ -57,308 +57,308 @@ public DbSet<GeoRegion> GeoRegions => Set<GeoRegion>();
         modelBuilder.Entity<Advertiser>()
             .HasOne<Agency>()
             .WithMany(parent => parent.Advertisers)
-            .HasForeignKey("AdvertisersId");
+            .HasForeignKey("Advertisers_Id");
 
         // Agency has one or more Teams of type Team
         modelBuilder.Entity<Team>()
             .HasOne<Agency>()
             .WithMany(parent => parent.Teams)
-            .HasForeignKey("TeamsId");
+            .HasForeignKey("Teams_Id");
 
         // Agency has one or more Users of type User
         modelBuilder.Entity<User>()
             .HasOne<Agency>()
             .WithMany(parent => parent.Users)
-            .HasForeignKey("UsersId");
+            .HasForeignKey("Users_Id");
 
         // Agency has one or more InsertionOrders of type InsertionOrder
         modelBuilder.Entity<InsertionOrder>()
             .HasOne<Agency>()
             .WithMany(parent => parent.InsertionOrders)
-            .HasForeignKey("InsertionOrdersId");
+            .HasForeignKey("InsertionOrders_Id");
 
         // Team has one Agency of type Agency
         modelBuilder.Entity<Team>()
             .HasOne(x => x.Agency)
             .WithMany()
-            .HasForeignKey("AgencyId");
+            .HasForeignKey("Agency_Id");
 
 
         // Team has one or more Users of type User
         modelBuilder.Entity<User>()
             .HasOne<Team>()
             .WithMany(parent => parent.Users)
-            .HasForeignKey("UsersId");
+            .HasForeignKey("Users_Id");
 
         // Team has one or more AdAccounts of type AdAccount
         modelBuilder.Entity<AdAccount>()
             .HasOne<Team>()
             .WithMany(parent => parent.AdAccounts)
-            .HasForeignKey("AdAccountsId");
+            .HasForeignKey("AdAccounts_Id");
 
         // User has one Agency of type Agency
         modelBuilder.Entity<User>()
             .HasOne(x => x.Agency)
             .WithMany()
-            .HasForeignKey("AgencyId");
+            .HasForeignKey("Agency_Id");
 
 
         // User has one or more Teams of type Team
         modelBuilder.Entity<Team>()
             .HasOne<User>()
             .WithMany(parent => parent.Teams)
-            .HasForeignKey("TeamsId");
+            .HasForeignKey("Teams_Id");
 
         // User has one or more AdAccounts of type AdAccount
         modelBuilder.Entity<AdAccount>()
             .HasOne<User>()
             .WithMany(parent => parent.AdAccounts)
-            .HasForeignKey("AdAccountsId");
+            .HasForeignKey("AdAccounts_Id");
 
         // Advertiser has one Agency of type Agency
         modelBuilder.Entity<Advertiser>()
             .HasOne(x => x.Agency)
             .WithMany()
-            .HasForeignKey("AgencyId");
+            .HasForeignKey("Agency_Id");
 
 
         // Advertiser has one or more AdAccounts of type AdAccount
         modelBuilder.Entity<AdAccount>()
             .HasOne<Advertiser>()
             .WithMany(parent => parent.AdAccounts)
-            .HasForeignKey("AdAccountsId");
+            .HasForeignKey("AdAccounts_Id");
 
         // Advertiser has one or more BillingProfiles of type BillingProfile
         modelBuilder.Entity<BillingProfile>()
             .HasOne<Advertiser>()
             .WithMany(parent => parent.BillingProfiles)
-            .HasForeignKey("BillingProfilesId");
+            .HasForeignKey("BillingProfiles_Id");
 
         // Advertiser has one or more Campaigns of type Campaign
         modelBuilder.Entity<Campaign>()
             .HasOne<Advertiser>()
             .WithMany(parent => parent.Campaigns)
-            .HasForeignKey("CampaignsId");
+            .HasForeignKey("Campaigns_Id");
 
         // Advertiser has one or more TrackingPixels of type TrackingPixel
         modelBuilder.Entity<TrackingPixel>()
             .HasOne<Advertiser>()
             .WithMany(parent => parent.TrackingPixels)
-            .HasForeignKey("TrackingPixelsId");
+            .HasForeignKey("TrackingPixels_Id");
 
         // BillingProfile has one Advertiser of type Advertiser
         modelBuilder.Entity<BillingProfile>()
             .HasOne(x => x.Advertiser)
             .WithMany()
-            .HasForeignKey("AdvertiserId");
+            .HasForeignKey("Advertiser_Id");
 
 
         // BillingProfile has one or more PaymentMethods of type PaymentMethod
         modelBuilder.Entity<PaymentMethod>()
             .HasOne<BillingProfile>()
             .WithMany(parent => parent.PaymentMethods)
-            .HasForeignKey("PaymentMethodsId");
+            .HasForeignKey("PaymentMethods_Id");
 
         // BillingProfile has one or more AdAccounts of type AdAccount
         modelBuilder.Entity<AdAccount>()
             .HasOne<BillingProfile>()
             .WithMany(parent => parent.AdAccounts)
-            .HasForeignKey("AdAccountsId");
+            .HasForeignKey("AdAccounts_Id");
 
         // PaymentMethod has one BillingProfile of type BillingProfile
         modelBuilder.Entity<PaymentMethod>()
             .HasOne(x => x.BillingProfile)
             .WithMany()
-            .HasForeignKey("BillingProfileId");
+            .HasForeignKey("BillingProfile_Id");
 
 
         // AdAccount has one Advertiser of type Advertiser
         modelBuilder.Entity<AdAccount>()
             .HasOne(x => x.Advertiser)
             .WithMany()
-            .HasForeignKey("AdvertiserId");
+            .HasForeignKey("Advertiser_Id");
 
         // AdAccount has one BillingProfile of type BillingProfile
         modelBuilder.Entity<AdAccount>()
             .HasOne(x => x.BillingProfile)
             .WithMany()
-            .HasForeignKey("BillingProfileId");
+            .HasForeignKey("BillingProfile_Id");
 
         // AdAccount has one Dsp of type DSP
         modelBuilder.Entity<AdAccount>()
             .HasOne(x => x.Dsp)
             .WithMany()
-            .HasForeignKey("DspId");
+            .HasForeignKey("Dsp_Id");
 
 
         // AdAccount has one or more Users of type User
         modelBuilder.Entity<User>()
             .HasOne<AdAccount>()
             .WithMany(parent => parent.Users)
-            .HasForeignKey("UsersId");
+            .HasForeignKey("Users_Id");
 
         // AdAccount has one or more Campaigns of type Campaign
         modelBuilder.Entity<Campaign>()
             .HasOne<AdAccount>()
             .WithMany(parent => parent.Campaigns)
-            .HasForeignKey("CampaignsId");
+            .HasForeignKey("Campaigns_Id");
 
         // AdAccount has one or more PerformanceMetrics of type PerformanceMetric
         modelBuilder.Entity<PerformanceMetric>()
             .HasOne<AdAccount>()
             .WithMany(parent => parent.PerformanceMetrics)
-            .HasForeignKey("PerformanceMetricsId");
+            .HasForeignKey("PerformanceMetrics_Id");
 
 
         // DSP has one or more AdAccounts of type AdAccount
         modelBuilder.Entity<AdAccount>()
             .HasOne<DSP>()
             .WithMany(parent => parent.AdAccounts)
-            .HasForeignKey("AdAccountsId");
+            .HasForeignKey("AdAccounts_Id");
 
         // Campaign has one AdAccount of type AdAccount
         modelBuilder.Entity<Campaign>()
             .HasOne(x => x.AdAccount)
             .WithMany()
-            .HasForeignKey("AdAccountId");
+            .HasForeignKey("AdAccount_Id");
 
         // Campaign has one InsertionOrder of type InsertionOrder
         modelBuilder.Entity<Campaign>()
             .HasOne(x => x.InsertionOrder)
             .WithMany()
-            .HasForeignKey("InsertionOrderId");
+            .HasForeignKey("InsertionOrder_Id");
 
 
         // Campaign has one or more LineItems of type LineItem
         modelBuilder.Entity<LineItem>()
             .HasOne<Campaign>()
             .WithMany(parent => parent.LineItems)
-            .HasForeignKey("LineItemsId");
+            .HasForeignKey("LineItems_Id");
 
         // Campaign has one or more Kpis of type KPI
         modelBuilder.Entity<KPI>()
             .HasOne<Campaign>()
             .WithMany(parent => parent.Kpis)
-            .HasForeignKey("KpisId");
+            .HasForeignKey("Kpis_Id");
 
         // Campaign has one or more TrackingPixels of type TrackingPixel
         modelBuilder.Entity<TrackingPixel>()
             .HasOne<Campaign>()
             .WithMany(parent => parent.TrackingPixels)
-            .HasForeignKey("TrackingPixelsId");
+            .HasForeignKey("TrackingPixels_Id");
 
         // Campaign has one or more Audiences of type AudienceSegment
         modelBuilder.Entity<AudienceSegment>()
             .HasOne<Campaign>()
             .WithMany(parent => parent.Audiences)
-            .HasForeignKey("AudiencesId");
+            .HasForeignKey("Audiences_Id");
 
         // Campaign has one or more Reports of type Report
         modelBuilder.Entity<Report>()
             .HasOne<Campaign>()
             .WithMany(parent => parent.Reports)
-            .HasForeignKey("ReportsId");
+            .HasForeignKey("Reports_Id");
 
         // KPI has one Campaign of type Campaign
         modelBuilder.Entity<KPI>()
             .HasOne(x => x.Campaign)
             .WithMany()
-            .HasForeignKey("CampaignId");
+            .HasForeignKey("Campaign_Id");
 
 
         // AudienceSegment has one Provider of type DataProvider
         modelBuilder.Entity<AudienceSegment>()
             .HasOne(x => x.Provider)
             .WithMany()
-            .HasForeignKey("ProviderId");
+            .HasForeignKey("Provider_Id");
 
 
         // AudienceSegment has one or more Campaigns of type Campaign
         modelBuilder.Entity<Campaign>()
             .HasOne<AudienceSegment>()
             .WithMany(parent => parent.Campaigns)
-            .HasForeignKey("CampaignsId");
+            .HasForeignKey("Campaigns_Id");
 
 
         // DataProvider has one or more AudienceSegments of type AudienceSegment
         modelBuilder.Entity<AudienceSegment>()
             .HasOne<DataProvider>()
             .WithMany(parent => parent.AudienceSegments)
-            .HasForeignKey("AudienceSegmentsId");
+            .HasForeignKey("AudienceSegments_Id");
 
         // LineItem has one Campaign of type Campaign
         modelBuilder.Entity<LineItem>()
             .HasOne(x => x.Campaign)
             .WithMany()
-            .HasForeignKey("CampaignId");
+            .HasForeignKey("Campaign_Id");
 
         // LineItem has one TargetingProfile of type TargetingProfile
         modelBuilder.Entity<LineItem>()
             .HasOne(x => x.TargetingProfile)
             .WithMany()
-            .HasForeignKey("TargetingProfileId");
+            .HasForeignKey("TargetingProfile_Id");
 
         // LineItem has one Deal of type Deal
         modelBuilder.Entity<LineItem>()
             .HasOne(x => x.Deal)
             .WithMany()
-            .HasForeignKey("DealId");
+            .HasForeignKey("Deal_Id");
 
 
         // LineItem has one or more Placements of type Placement
         modelBuilder.Entity<Placement>()
             .HasOne<LineItem>()
             .WithMany(parent => parent.Placements)
-            .HasForeignKey("PlacementsId");
+            .HasForeignKey("Placements_Id");
 
         // LineItem has one or more Creatives of type CreativeAsset
         modelBuilder.Entity<CreativeAsset>()
             .HasOne<LineItem>()
             .WithMany(parent => parent.Creatives)
-            .HasForeignKey("CreativesId");
+            .HasForeignKey("Creatives_Id");
 
         // LineItem has one or more PerformanceMetrics of type PerformanceMetric
         modelBuilder.Entity<PerformanceMetric>()
             .HasOne<LineItem>()
             .WithMany(parent => parent.PerformanceMetrics)
-            .HasForeignKey("PerformanceMetricsId");
+            .HasForeignKey("PerformanceMetrics_Id");
 
         // TargetingProfile has one BrandSafetyPolicy of type BrandSafetyPolicy
         modelBuilder.Entity<TargetingProfile>()
             .HasOne(x => x.BrandSafetyPolicy)
             .WithMany()
-            .HasForeignKey("BrandSafetyPolicyId");
+            .HasForeignKey("BrandSafetyPolicy_Id");
 
 
         // TargetingProfile has one or more AudienceSegments of type AudienceSegment
         modelBuilder.Entity<AudienceSegment>()
             .HasOne<TargetingProfile>()
             .WithMany(parent => parent.AudienceSegments)
-            .HasForeignKey("AudienceSegmentsId");
+            .HasForeignKey("AudienceSegments_Id");
 
         // TargetingProfile has one or more GeoRegions of type GeoRegion
         modelBuilder.Entity<GeoRegion>()
             .HasOne<TargetingProfile>()
             .WithMany(parent => parent.GeoRegions)
-            .HasForeignKey("GeoRegionsId");
+            .HasForeignKey("GeoRegions_Id");
 
         // TargetingProfile has one or more ContentCategories of type ContentCategory
         modelBuilder.Entity<ContentCategory>()
             .HasOne<TargetingProfile>()
             .WithMany(parent => parent.ContentCategories)
-            .HasForeignKey("ContentCategoriesId");
+            .HasForeignKey("ContentCategories_Id");
 
         // TargetingProfile has one or more DeviceCriteria of type DeviceCriterion
         modelBuilder.Entity<DeviceCriterion>()
             .HasOne<TargetingProfile>()
             .WithMany(parent => parent.DeviceCriteria)
-            .HasForeignKey("DeviceCriteriaId");
+            .HasForeignKey("DeviceCriteria_Id");
 
         // DeviceCriterion has one TargetingProfile of type TargetingProfile
         modelBuilder.Entity<DeviceCriterion>()
             .HasOne(x => x.TargetingProfile)
             .WithMany()
-            .HasForeignKey("TargetingProfileId");
+            .HasForeignKey("TargetingProfile_Id");
 
 
 
@@ -366,7 +366,7 @@ public DbSet<GeoRegion> GeoRegions => Set<GeoRegion>();
         modelBuilder.Entity<TargetingProfile>()
             .HasOne<BrandSafetyPolicy>()
             .WithMany(parent => parent.TargetingProfiles)
-            .HasForeignKey("TargetingProfilesId");
+            .HasForeignKey("TargetingProfiles_Id");
 
 
 
@@ -374,106 +374,106 @@ public DbSet<GeoRegion> GeoRegions => Set<GeoRegion>();
         modelBuilder.Entity<InventorySource>()
             .HasOne<Publisher>()
             .WithMany(parent => parent.InventorySources)
-            .HasForeignKey("InventorySourcesId");
+            .HasForeignKey("InventorySources_Id");
 
         // Publisher has one or more Deals of type Deal
         modelBuilder.Entity<Deal>()
             .HasOne<Publisher>()
             .WithMany(parent => parent.Deals)
-            .HasForeignKey("DealsId");
+            .HasForeignKey("Deals_Id");
 
         // Publisher has one or more CreativeApprovals of type CreativeApproval
         modelBuilder.Entity<CreativeApproval>()
             .HasOne<Publisher>()
             .WithMany(parent => parent.CreativeApprovals)
-            .HasForeignKey("CreativeApprovalsId");
+            .HasForeignKey("CreativeApprovals_Id");
 
         // Publisher has one or more InsertionOrders of type InsertionOrder
         modelBuilder.Entity<InsertionOrder>()
             .HasOne<Publisher>()
             .WithMany(parent => parent.InsertionOrders)
-            .HasForeignKey("InsertionOrdersId");
+            .HasForeignKey("InsertionOrders_Id");
 
         // Publisher has one or more RateCards of type RateCard
         modelBuilder.Entity<RateCard>()
             .HasOne<Publisher>()
             .WithMany(parent => parent.RateCards)
-            .HasForeignKey("RateCardsId");
+            .HasForeignKey("RateCards_Id");
 
         // InventorySource has one Publisher of type Publisher
         modelBuilder.Entity<InventorySource>()
             .HasOne(x => x.Publisher)
             .WithMany()
-            .HasForeignKey("PublisherId");
+            .HasForeignKey("Publisher_Id");
 
 
         // InventorySource has one or more AdSlots of type AdSlot
         modelBuilder.Entity<AdSlot>()
             .HasOne<InventorySource>()
             .WithMany(parent => parent.AdSlots)
-            .HasForeignKey("AdSlotsId");
+            .HasForeignKey("AdSlots_Id");
 
         // InventorySource has one or more Deals of type Deal
         modelBuilder.Entity<Deal>()
             .HasOne<InventorySource>()
             .WithMany(parent => parent.Deals)
-            .HasForeignKey("DealsId");
+            .HasForeignKey("Deals_Id");
 
         // AdSlot has one InventorySource of type InventorySource
         modelBuilder.Entity<AdSlot>()
             .HasOne(x => x.InventorySource)
             .WithMany()
-            .HasForeignKey("InventorySourceId");
+            .HasForeignKey("InventorySource_Id");
 
 
         // AdSlot has one or more Placements of type Placement
         modelBuilder.Entity<Placement>()
             .HasOne<AdSlot>()
             .WithMany(parent => parent.Placements)
-            .HasForeignKey("PlacementsId");
+            .HasForeignKey("Placements_Id");
 
         // AdSlot has one or more Rates of type Rate
         modelBuilder.Entity<Rate>()
             .HasOne<AdSlot>()
             .WithMany(parent => parent.Rates)
-            .HasForeignKey("RatesId");
+            .HasForeignKey("Rates_Id");
 
         // Deal has one Publisher of type Publisher
         modelBuilder.Entity<Deal>()
             .HasOne(x => x.Publisher)
             .WithMany()
-            .HasForeignKey("PublisherId");
+            .HasForeignKey("Publisher_Id");
 
 
         // Deal has one or more InventorySources of type InventorySource
         modelBuilder.Entity<InventorySource>()
             .HasOne<Deal>()
             .WithMany(parent => parent.InventorySources)
-            .HasForeignKey("InventorySourcesId");
+            .HasForeignKey("InventorySources_Id");
 
         // Deal has one or more Placements of type Placement
         modelBuilder.Entity<Placement>()
             .HasOne<Deal>()
             .WithMany(parent => parent.Placements)
-            .HasForeignKey("PlacementsId");
+            .HasForeignKey("Placements_Id");
 
         // Placement has one LineItem of type LineItem
         modelBuilder.Entity<Placement>()
             .HasOne(x => x.LineItem)
             .WithMany()
-            .HasForeignKey("LineItemId");
+            .HasForeignKey("LineItem_Id");
 
         // Placement has one AdSlot of type AdSlot
         modelBuilder.Entity<Placement>()
             .HasOne(x => x.AdSlot)
             .WithMany()
-            .HasForeignKey("AdSlotId");
+            .HasForeignKey("AdSlot_Id");
 
         // Placement has one Deal of type Deal
         modelBuilder.Entity<Placement>()
             .HasOne(x => x.Deal)
             .WithMany()
-            .HasForeignKey("DealId");
+            .HasForeignKey("Deal_Id");
 
 
 
@@ -481,236 +481,236 @@ public DbSet<GeoRegion> GeoRegions => Set<GeoRegion>();
         modelBuilder.Entity<CreativeFile>()
             .HasOne<CreativeAsset>()
             .WithMany(parent => parent.Files)
-            .HasForeignKey("FilesId");
+            .HasForeignKey("Files_Id");
 
         // CreativeAsset has one or more Approvals of type CreativeApproval
         modelBuilder.Entity<CreativeApproval>()
             .HasOne<CreativeAsset>()
             .WithMany(parent => parent.Approvals)
-            .HasForeignKey("ApprovalsId");
+            .HasForeignKey("Approvals_Id");
 
         // CreativeAsset has one or more Variations of type CreativeVariation
         modelBuilder.Entity<CreativeVariation>()
             .HasOne<CreativeAsset>()
             .WithMany(parent => parent.Variations)
-            .HasForeignKey("VariationsId");
+            .HasForeignKey("Variations_Id");
 
         // CreativeAsset has one or more LineItems of type LineItem
         modelBuilder.Entity<LineItem>()
             .HasOne<CreativeAsset>()
             .WithMany(parent => parent.LineItems)
-            .HasForeignKey("LineItemsId");
+            .HasForeignKey("LineItems_Id");
 
         // CreativeFile has one CreativeAsset of type CreativeAsset
         modelBuilder.Entity<CreativeFile>()
             .HasOne(x => x.CreativeAsset)
             .WithMany()
-            .HasForeignKey("CreativeAssetId");
+            .HasForeignKey("CreativeAsset_Id");
 
 
         // CreativeVariation has one CreativeAsset of type CreativeAsset
         modelBuilder.Entity<CreativeVariation>()
             .HasOne(x => x.CreativeAsset)
             .WithMany()
-            .HasForeignKey("CreativeAssetId");
+            .HasForeignKey("CreativeAsset_Id");
 
 
         // CreativeApproval has one CreativeAsset of type CreativeAsset
         modelBuilder.Entity<CreativeApproval>()
             .HasOne(x => x.CreativeAsset)
             .WithMany()
-            .HasForeignKey("CreativeAssetId");
+            .HasForeignKey("CreativeAsset_Id");
 
         // CreativeApproval has one Publisher of type Publisher
         modelBuilder.Entity<CreativeApproval>()
             .HasOne(x => x.Publisher)
             .WithMany()
-            .HasForeignKey("PublisherId");
+            .HasForeignKey("Publisher_Id");
 
 
         // TrackingPixel has one Campaign of type Campaign
         modelBuilder.Entity<TrackingPixel>()
             .HasOne(x => x.Campaign)
             .WithMany()
-            .HasForeignKey("CampaignId");
+            .HasForeignKey("Campaign_Id");
 
         // TrackingPixel has one Advertiser of type Advertiser
         modelBuilder.Entity<TrackingPixel>()
             .HasOne(x => x.Advertiser)
             .WithMany()
-            .HasForeignKey("AdvertiserId");
+            .HasForeignKey("Advertiser_Id");
 
 
         // TrackingPixel has one or more ConversionEvents of type ConversionEvent
         modelBuilder.Entity<ConversionEvent>()
             .HasOne<TrackingPixel>()
             .WithMany(parent => parent.ConversionEvents)
-            .HasForeignKey("ConversionEventsId");
+            .HasForeignKey("ConversionEvents_Id");
 
         // ConversionEvent has one Campaign of type Campaign
         modelBuilder.Entity<ConversionEvent>()
             .HasOne(x => x.Campaign)
             .WithMany()
-            .HasForeignKey("CampaignId");
+            .HasForeignKey("Campaign_Id");
 
         // ConversionEvent has one LineItem of type LineItem
         modelBuilder.Entity<ConversionEvent>()
             .HasOne(x => x.LineItem)
             .WithMany()
-            .HasForeignKey("LineItemId");
+            .HasForeignKey("LineItem_Id");
 
         // ConversionEvent has one TrackingPixel of type TrackingPixel
         modelBuilder.Entity<ConversionEvent>()
             .HasOne(x => x.TrackingPixel)
             .WithMany()
-            .HasForeignKey("TrackingPixelId");
+            .HasForeignKey("TrackingPixel_Id");
 
 
         // PerformanceMetric has one AdAccount of type AdAccount
         modelBuilder.Entity<PerformanceMetric>()
             .HasOne(x => x.AdAccount)
             .WithMany()
-            .HasForeignKey("AdAccountId");
+            .HasForeignKey("AdAccount_Id");
 
         // PerformanceMetric has one Campaign of type Campaign
         modelBuilder.Entity<PerformanceMetric>()
             .HasOne(x => x.Campaign)
             .WithMany()
-            .HasForeignKey("CampaignId");
+            .HasForeignKey("Campaign_Id");
 
         // PerformanceMetric has one LineItem of type LineItem
         modelBuilder.Entity<PerformanceMetric>()
             .HasOne(x => x.LineItem)
             .WithMany()
-            .HasForeignKey("LineItemId");
+            .HasForeignKey("LineItem_Id");
 
         // PerformanceMetric has one Placement of type Placement
         modelBuilder.Entity<PerformanceMetric>()
             .HasOne(x => x.Placement)
             .WithMany()
-            .HasForeignKey("PlacementId");
+            .HasForeignKey("Placement_Id");
 
         // PerformanceMetric has one CreativeAsset of type CreativeAsset
         modelBuilder.Entity<PerformanceMetric>()
             .HasOne(x => x.CreativeAsset)
             .WithMany()
-            .HasForeignKey("CreativeAssetId");
+            .HasForeignKey("CreativeAsset_Id");
 
 
         // Report has one AdAccount of type AdAccount
         modelBuilder.Entity<Report>()
             .HasOne(x => x.AdAccount)
             .WithMany()
-            .HasForeignKey("AdAccountId");
+            .HasForeignKey("AdAccount_Id");
 
         // Report has one Campaign of type Campaign
         modelBuilder.Entity<Report>()
             .HasOne(x => x.Campaign)
             .WithMany()
-            .HasForeignKey("CampaignId");
+            .HasForeignKey("Campaign_Id");
 
         // Report has one LineItem of type LineItem
         modelBuilder.Entity<Report>()
             .HasOne(x => x.LineItem)
             .WithMany()
-            .HasForeignKey("LineItemId");
+            .HasForeignKey("LineItem_Id");
 
 
         // InsertionOrder has one Advertiser of type Advertiser
         modelBuilder.Entity<InsertionOrder>()
             .HasOne(x => x.Advertiser)
             .WithMany()
-            .HasForeignKey("AdvertiserId");
+            .HasForeignKey("Advertiser_Id");
 
         // InsertionOrder has one Agency of type Agency
         modelBuilder.Entity<InsertionOrder>()
             .HasOne(x => x.Agency)
             .WithMany()
-            .HasForeignKey("AgencyId");
+            .HasForeignKey("Agency_Id");
 
         // InsertionOrder has one Publisher of type Publisher
         modelBuilder.Entity<InsertionOrder>()
             .HasOne(x => x.Publisher)
             .WithMany()
-            .HasForeignKey("PublisherId");
+            .HasForeignKey("Publisher_Id");
 
 
         // InsertionOrder has one or more Campaigns of type Campaign
         modelBuilder.Entity<Campaign>()
             .HasOne<InsertionOrder>()
             .WithMany(parent => parent.Campaigns)
-            .HasForeignKey("CampaignsId");
+            .HasForeignKey("Campaigns_Id");
 
         // RateCard has one Publisher of type Publisher
         modelBuilder.Entity<RateCard>()
             .HasOne(x => x.Publisher)
             .WithMany()
-            .HasForeignKey("PublisherId");
+            .HasForeignKey("Publisher_Id");
 
 
         // RateCard has one or more Rates of type Rate
         modelBuilder.Entity<Rate>()
             .HasOne<RateCard>()
             .WithMany(parent => parent.Rates)
-            .HasForeignKey("RatesId");
+            .HasForeignKey("Rates_Id");
 
         // Rate has one RateCard of type RateCard
         modelBuilder.Entity<Rate>()
             .HasOne(x => x.RateCard)
             .WithMany()
-            .HasForeignKey("RateCardId");
+            .HasForeignKey("RateCard_Id");
 
         // Rate has one AdSlot of type AdSlot
         modelBuilder.Entity<Rate>()
             .HasOne(x => x.AdSlot)
             .WithMany()
-            .HasForeignKey("AdSlotId");
+            .HasForeignKey("AdSlot_Id");
 
 
         // Experiment has one Campaign of type Campaign
         modelBuilder.Entity<Experiment>()
             .HasOne(x => x.Campaign)
             .WithMany()
-            .HasForeignKey("CampaignId");
+            .HasForeignKey("Campaign_Id");
 
 
         // Experiment has one or more Variants of type ExperimentVariant
         modelBuilder.Entity<ExperimentVariant>()
             .HasOne<Experiment>()
             .WithMany(parent => parent.Variants)
-            .HasForeignKey("VariantsId");
+            .HasForeignKey("Variants_Id");
 
         // ExperimentVariant has one Experiment of type Experiment
         modelBuilder.Entity<ExperimentVariant>()
             .HasOne(x => x.Experiment)
             .WithMany()
-            .HasForeignKey("ExperimentId");
+            .HasForeignKey("Experiment_Id");
 
         // ExperimentVariant has one CreativeVariation of type CreativeVariation
         modelBuilder.Entity<ExperimentVariant>()
             .HasOne(x => x.CreativeVariation)
             .WithMany()
-            .HasForeignKey("CreativeVariationId");
+            .HasForeignKey("CreativeVariation_Id");
 
         // ExperimentVariant has one LineItem of type LineItem
         modelBuilder.Entity<ExperimentVariant>()
             .HasOne(x => x.LineItem)
             .WithMany()
-            .HasForeignKey("LineItemId");
+            .HasForeignKey("LineItem_Id");
 
 
         // GeoRegion has one Parent of type GeoRegion
         modelBuilder.Entity<GeoRegion>()
             .HasOne(x => x.Parent)
             .WithMany()
-            .HasForeignKey("ParentId");
+            .HasForeignKey("Parent_Id");
 
 
         // GeoRegion has one or more Children of type GeoRegion
         modelBuilder.Entity<GeoRegion>()
             .HasOne<GeoRegion>()
             .WithMany(parent => parent.Children)
-            .HasForeignKey("ChildrenId");
+            .HasForeignKey("Children_Id");
 
     }
 }

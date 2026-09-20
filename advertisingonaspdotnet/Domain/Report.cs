@@ -8,7 +8,7 @@ public class Report
 
  public virtual long? ReportId { get; set; } 
  public virtual string? ReportName { get; set; } 
- public virtual DateTime? GeneratedAt { get; set; } 
+ public virtual DateTime_? GeneratedAt { get; set; } 
  public virtual URL? FileUrl { get; set; } 
 public virtual AdAccount? AdAccount { get; set; } 
 public virtual Campaign? Campaign { get; set; } 

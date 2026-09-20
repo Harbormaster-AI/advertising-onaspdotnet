@@ -7,7 +7,7 @@ public class ConversionEvent
     public Guid Id { get; set; } = Guid.NewGuid();
 
  public virtual long? ConversioneventId { get; set; } 
- public virtual DateTime? Timestamp { get; set; } 
+ public virtual DateTime_? Timestamp { get; set; } 
  public virtual Money? Value { get; set; } 
 public virtual Campaign? Campaign { get; set; } 
 public virtual LineItem? LineItem { get; set; } 

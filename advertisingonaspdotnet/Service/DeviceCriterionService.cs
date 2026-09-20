@@ -57,7 +57,7 @@ public class DeviceCriterionService : IDeviceCriterionService
             }
             existing.DeviceType = model.DeviceType;
             existing.PlatformType = model.PlatformType;
-            existing.Operator = model.Operator;
+            existing.Operator_ = model.Operator_;
 
             await _repository.UpdateAsync(existing, cancellationToken);
         }

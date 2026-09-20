@@ -110,7 +110,7 @@ public static class DeviceCriterionEndpoints
             Id = request.Id,
             DeviceType = request.DeviceType,
             PlatformType = request.PlatformType,
-            Operator = request.Operator,
+            Operator_ = request.Operator_,
         };
         return model;
     }
