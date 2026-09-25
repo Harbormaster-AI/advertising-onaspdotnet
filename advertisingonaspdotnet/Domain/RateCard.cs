@@ -1,3 +1,4 @@
+
 using advertisingonaspdotnet.Contracts;
 
 namespace advertisingonaspdotnet.Domain;

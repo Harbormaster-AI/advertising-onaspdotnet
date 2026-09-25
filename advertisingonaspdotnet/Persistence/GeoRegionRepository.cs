@@ -1,4 +1,7 @@
+
+using advertisingonaspdotnet.Contracts;
 using advertisingonaspdotnet.Domain;
+
 using Microsoft.EntityFrameworkCore;
 
 namespace advertisingonaspdotnet.Persistence;
@@ -44,4 +47,41 @@ public class GeoRegionRepository : IGeoRegionRepository
         _db.GeoRegions.Remove(geoRegion);
         await _db.SaveChangesAsync(cancellationToken);
     }
+
+
+    public async Task AddToChildrenAsync(
+        MultipleAssociationRequest request,
+        CancellationToken cancellationToken)
+    {
+        await _db.GeoRegions
+            .Where(geoRegion =>
+                request.ChildIds.Contains(geoRegion.Id))
+            .ExecuteUpdateAsync(setters =>
+                setters.SetProperty(
+                    geoRegion =>
+                        EF.Property<Guid?>(
+                            geoRegion,
+                            "GeoRegion_Id"),
+                    request.ParentId));
+    }
+
+    public async Task RemoveFromChildrenAsync(
+        MultipleAssociationRequest request,
+        CancellationToken cancellationToken)
+    {
+        await _db.GeoRegions
+            .Where(geoRegion =>
+                request.ChildIds.Contains(geoRegion.Id) &&
+                EF.Property<Guid?>(
+                    geoRegion,
+                    "GeoRegion_Id") == request.ParentId)
+            .ExecuteUpdateAsync(setters =>
+                setters.SetProperty(
+                    geoRegion =>
+                        EF.Property<Guid?>(
+                            geoRegion,
+                            "GeoRegion_Id"),
+                    (Guid?)null));
+    }
+
 }

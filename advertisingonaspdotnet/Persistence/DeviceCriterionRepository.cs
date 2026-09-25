@@ -1,4 +1,7 @@
+
+using advertisingonaspdotnet.Contracts;
 using advertisingonaspdotnet.Domain;
+
 using Microsoft.EntityFrameworkCore;
 
 namespace advertisingonaspdotnet.Persistence;
@@ -44,4 +47,5 @@ public class DeviceCriterionRepository : IDeviceCriterionRepository
         _db.DeviceCriterions.Remove(deviceCriterion);
         await _db.SaveChangesAsync(cancellationToken);
     }
+
 }

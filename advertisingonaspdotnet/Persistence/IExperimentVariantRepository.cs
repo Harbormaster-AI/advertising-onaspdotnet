@@ -1,4 +1,5 @@
 using advertisingonaspdotnet.Domain;
+using advertisingonaspdotnet.Contracts;
 
 namespace advertisingonaspdotnet.Persistence;
 
@@ -9,4 +10,6 @@ public interface IExperimentVariantRepository
     Task AddAsync(ExperimentVariant experimentVariant, CancellationToken cancellationToken);
     Task UpdateAsync(ExperimentVariant experimentVariant, CancellationToken cancellationToken);
     Task DeleteAsync(ExperimentVariant experimentVariant, CancellationToken cancellationToken);
+
+
 }

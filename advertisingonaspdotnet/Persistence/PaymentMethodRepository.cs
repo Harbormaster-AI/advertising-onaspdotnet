@@ -1,4 +1,7 @@
+
+using advertisingonaspdotnet.Contracts;
 using advertisingonaspdotnet.Domain;
+
 using Microsoft.EntityFrameworkCore;
 
 namespace advertisingonaspdotnet.Persistence;
@@ -44,4 +47,5 @@ public class PaymentMethodRepository : IPaymentMethodRepository
         _db.PaymentMethods.Remove(paymentMethod);
         await _db.SaveChangesAsync(cancellationToken);
     }
+
 }

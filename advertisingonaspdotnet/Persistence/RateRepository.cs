@@ -1,4 +1,7 @@
+
+using advertisingonaspdotnet.Contracts;
 using advertisingonaspdotnet.Domain;
+
 using Microsoft.EntityFrameworkCore;
 
 namespace advertisingonaspdotnet.Persistence;
@@ -46,4 +49,5 @@ public class RateRepository : IRateRepository
         _db.Rates.Remove(rate);
         await _db.SaveChangesAsync(cancellationToken);
     }
+
 }

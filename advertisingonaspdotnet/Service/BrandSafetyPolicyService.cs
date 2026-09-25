@@ -1,6 +1,8 @@
+
 using advertisingonaspdotnet.Domain;
 using advertisingonaspdotnet.Persistence;
 using advertisingonaspdotnet.Contracts;
+using advertisingonaspdotnet.Telemetry;
 
 namespace advertisingonaspdotnet.Service;
 
@@ -11,7 +13,6 @@ public interface IBrandSafetyPolicyService {
     Task<BrandSafetyPolicy?> Get(IdentifierRequest identifier, CancellationToken cancellationToken);
     Task<IReadOnlyList<BrandSafetyPolicy>> GetAll(CancellationToken cancellationToken);
     Task<bool> Delete(IdentifierRequest identifier, CancellationToken cancellationToken);
-
     // ------------------------------
     // Single Associations
     // -------------------------------
@@ -23,26 +24,38 @@ public interface IBrandSafetyPolicyService {
 
 public class BrandSafetyPolicyService : IBrandSafetyPolicyService
 {
+    private readonly ApplicationTelemetry _telemetry;
     private readonly IBrandSafetyPolicyRepository _repository;
     private readonly ILogger<BrandSafetyPolicyService> _logger;
+    private readonly IServiceResolver _serviceResolver;
+
 
     public BrandSafetyPolicyService(
-        IBrandSafetyPolicyRepository repository, ILogger<BrandSafetyPolicyService> logger )
+        ApplicationTelemetry telemetry,
+        IBrandSafetyPolicyRepository repository,
+        ILogger<BrandSafetyPolicyService> logger,
+        IServiceResolver serviceResolver)
     {
+        _telemetry = telemetry;
         _repository = repository;
         _logger = logger;
+        _serviceResolver = serviceResolver;
     }
-
 
     public async Task Create(BrandSafetyPolicy model, CancellationToken cancellationToken)
     {
         try
         {
-            await _repository.AddAsync(model, cancellationToken);
+            await _telemetry.Execute(
+                "BrandSafetyPolicy",
+                "CreateBrandSafetyPolicy",
+                () => _repository.AddAsync(model, cancellationToken));
         }
         catch (Exception ex)
         {
-            _logger.LogError($"Unexpected Error: {ex.Message}");
+            _logger.LogError(
+                    ex,
+                    "Unexpected error while creating Transaction.");
         }
     }
 
@@ -57,11 +70,16 @@ public class BrandSafetyPolicyService : IBrandSafetyPolicyService
             existing.Level = model.Level;
             existing.ContentRatingThreshold = model.ContentRatingThreshold;
 
-            await _repository.UpdateAsync(existing, cancellationToken);
+            await _telemetry.Execute(
+                "BrandSafetyPolicy",
+                "UpdateBrandSafetyPolicy",
+                () => _repository.UpdateAsync(existing, cancellationToken));
         }
         catch (Exception ex)
         {
-            _logger.LogError($"Unexpected Error: {ex.Message}");
+            _logger.LogError(
+                    ex,
+                    "Unexpected error while creating Transaction.");
             return false;
         }
         return true;
@@ -83,22 +101,53 @@ public class BrandSafetyPolicyService : IBrandSafetyPolicyService
 
         try
         {
-            await _repository.DeleteAsync(existing, cancellationToken);
+            await _telemetry.Execute(
+                "BrandSafetyPolicy",
+                "UpdateBrandSafetyPolicy",
+                () => _repository.DeleteAsync(existing, cancellationToken));
         }
         catch (Exception ex)
         {
-            _logger.LogError($"Unexpected Error: {ex.Message}");
+            _logger.LogError(
+                    ex,
+                    "Unexpected error while creating Transaction.");
             return false;
         }
         return true;
-
     }
 
 
     public async Task<bool> AddToTargetingProfiles(MultipleAssociationRequest request, CancellationToken cancellationToken) {
+        try {
+            await _telemetry.Execute(
+                "BrandSafetyPolicy",
+                "AddToTargetingProfiles",
+                () => _repository.AddToTargetingProfilesAsync(request, cancellationToken));
+        }
+        catch (Exception ex)
+        {
+           _logger.LogError(
+                   ex,
+                   "Unexpected error while creating Transaction.");
+            return false;
+        }
         return true;
     }
+
     public async Task<bool> RemoveFromTargetingProfiles(MultipleAssociationRequest request, CancellationToken cancellationToken) {
+        try {
+            await _telemetry.Execute(
+                "BrandSafetyPolicy",
+                "RemoveFromTargetingProfiles",
+                () => _repository.RemoveFromTargetingProfilesAsync(request, cancellationToken));
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(
+                    ex,
+                    "Unexpected error while creating Transaction.");
+            return false;
+        }
         return true;
     }
 

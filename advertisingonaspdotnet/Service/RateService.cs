@@ -1,6 +1,8 @@
+
 using advertisingonaspdotnet.Domain;
 using advertisingonaspdotnet.Persistence;
 using advertisingonaspdotnet.Contracts;
+using advertisingonaspdotnet.Telemetry;
 
 namespace advertisingonaspdotnet.Service;
 
@@ -11,7 +13,6 @@ public interface IRateService {
     Task<Rate?> Get(IdentifierRequest identifier, CancellationToken cancellationToken);
     Task<IReadOnlyList<Rate>> GetAll(CancellationToken cancellationToken);
     Task<bool> Delete(IdentifierRequest identifier, CancellationToken cancellationToken);
-
     // ------------------------------
     // Single Associations
     // -------------------------------
@@ -25,28 +26,38 @@ public interface IRateService {
 
 public class RateService : IRateService
 {
+    private readonly ApplicationTelemetry _telemetry;
     private readonly IRateRepository _repository;
     private readonly ILogger<RateService> _logger;
+    private readonly IServiceResolver _serviceResolver;
+
 
     public RateService(
-        IRateRepository repository, ILogger<RateService> logger )
+        ApplicationTelemetry telemetry,
+        IRateRepository repository,
+        ILogger<RateService> logger,
+        IServiceResolver serviceResolver)
     {
+        _telemetry = telemetry;
         _repository = repository;
         _logger = logger;
+        _serviceResolver = serviceResolver;
     }
-
 
     public async Task Create(Rate model, CancellationToken cancellationToken)
     {
-
- 
-         try
+        try
         {
-            await _repository.AddAsync(model, cancellationToken);
+            await _telemetry.Execute(
+                "Rate",
+                "CreateRate",
+                () => _repository.AddAsync(model, cancellationToken));
         }
         catch (Exception ex)
         {
-            _logger.LogError($"Unexpected Error: {ex.Message}");
+            _logger.LogError(
+                    ex,
+                    "Unexpected error while creating Transaction.");
         }
     }
 
@@ -62,11 +73,16 @@ public class RateService : IRateService
             existing.AdFormat = model.AdFormat;
             existing.PricingModel = model.PricingModel;
 
-            await _repository.UpdateAsync(existing, cancellationToken);
+            await _telemetry.Execute(
+                "Rate",
+                "UpdateRate",
+                () => _repository.UpdateAsync(existing, cancellationToken));
         }
         catch (Exception ex)
         {
-            _logger.LogError($"Unexpected Error: {ex.Message}");
+            _logger.LogError(
+                    ex,
+                    "Unexpected error while creating Transaction.");
             return false;
         }
         return true;
@@ -88,28 +104,124 @@ public class RateService : IRateService
 
         try
         {
-            await _repository.DeleteAsync(existing, cancellationToken);
+            await _telemetry.Execute(
+                "Rate",
+                "UpdateRate",
+                () => _repository.DeleteAsync(existing, cancellationToken));
         }
         catch (Exception ex)
         {
-            _logger.LogError($"Unexpected Error: {ex.Message}");
+            _logger.LogError(
+                    ex,
+                    "Unexpected error while creating Transaction.");
             return false;
         }
         return true;
-
     }
 
     public async Task<bool> AssignRateCard(AssociationRequest request, CancellationToken cancellationToken) {
+
+        var parent = await _repository.GetByIdAsync(request.ParentId, cancellationToken);
+        if (parent is null)
+        {
+            _logger.LogError("No Rate found using Id {ParentId}", request.ParentId);
+            return false;
+        }
+
+        try
+        {
+            var childRequest = new IdentifierRequest
+            {
+                Id = request.ChildId,
+            };
+
+            var child = await _serviceResolver.Get<RateCardService>().Get(childRequest, cancellationToken);
+            parent.RateCard = child;
+            await Update( parent, cancellationToken );
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(
+                    ex,
+                    "Unexpected error while creating Transaction.");
+            return false;
+        }
         return true;
     }
+
     public async Task<bool> UnassignRateCard(AssociationRequest request, CancellationToken cancellationToken) {
+        var parent = await _repository.GetByIdAsync(request.ParentId, cancellationToken);
+        if (parent is null)
+        {
+            _logger.LogError("No Rate found using Id {ParentId}", request.ParentId);
+            return false;
+        }
+
+        try
+        {
+            parent.RateCard = null;
+            await Update( parent, cancellationToken );
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(
+                    ex,
+                    "Unexpected error while creating Transaction.");
+            return false;
+        }
         return true;
     }
 
     public async Task<bool> AssignAdSlot(AssociationRequest request, CancellationToken cancellationToken) {
+
+        var parent = await _repository.GetByIdAsync(request.ParentId, cancellationToken);
+        if (parent is null)
+        {
+            _logger.LogError("No Rate found using Id {ParentId}", request.ParentId);
+            return false;
+        }
+
+        try
+        {
+            var childRequest = new IdentifierRequest
+            {
+                Id = request.ChildId,
+            };
+
+            var child = await _serviceResolver.Get<AdSlotService>().Get(childRequest, cancellationToken);
+            parent.AdSlot = child;
+            await Update( parent, cancellationToken );
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(
+                    ex,
+                    "Unexpected error while creating Transaction.");
+            return false;
+        }
         return true;
     }
+
     public async Task<bool> UnassignAdSlot(AssociationRequest request, CancellationToken cancellationToken) {
+        var parent = await _repository.GetByIdAsync(request.ParentId, cancellationToken);
+        if (parent is null)
+        {
+            _logger.LogError("No Rate found using Id {ParentId}", request.ParentId);
+            return false;
+        }
+
+        try
+        {
+            parent.AdSlot = null;
+            await Update( parent, cancellationToken );
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(
+                    ex,
+                    "Unexpected error while creating Transaction.");
+            return false;
+        }
         return true;
     }
 

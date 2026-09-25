@@ -1,6 +1,8 @@
+
 using advertisingonaspdotnet.Domain;
 using advertisingonaspdotnet.Persistence;
 using advertisingonaspdotnet.Contracts;
+using advertisingonaspdotnet.Telemetry;
 
 namespace advertisingonaspdotnet.Service;
 
@@ -11,7 +13,6 @@ public interface IBillingProfileService {
     Task<BillingProfile?> Get(IdentifierRequest identifier, CancellationToken cancellationToken);
     Task<IReadOnlyList<BillingProfile>> GetAll(CancellationToken cancellationToken);
     Task<bool> Delete(IdentifierRequest identifier, CancellationToken cancellationToken);
-
     // ------------------------------
     // Single Associations
     // -------------------------------
@@ -27,27 +28,38 @@ public interface IBillingProfileService {
 
 public class BillingProfileService : IBillingProfileService
 {
+    private readonly ApplicationTelemetry _telemetry;
     private readonly IBillingProfileRepository _repository;
     private readonly ILogger<BillingProfileService> _logger;
+    private readonly IServiceResolver _serviceResolver;
+
 
     public BillingProfileService(
-        IBillingProfileRepository repository, ILogger<BillingProfileService> logger )
+        ApplicationTelemetry telemetry,
+        IBillingProfileRepository repository,
+        ILogger<BillingProfileService> logger,
+        IServiceResolver serviceResolver)
     {
+        _telemetry = telemetry;
         _repository = repository;
         _logger = logger;
+        _serviceResolver = serviceResolver;
     }
-
 
     public async Task Create(BillingProfile model, CancellationToken cancellationToken)
     {
-
-         try
+        try
         {
-            await _repository.AddAsync(model, cancellationToken);
+            await _telemetry.Execute(
+                "BillingProfile",
+                "CreateBillingProfile",
+                () => _repository.AddAsync(model, cancellationToken));
         }
         catch (Exception ex)
         {
-            _logger.LogError($"Unexpected Error: {ex.Message}");
+            _logger.LogError(
+                    ex,
+                    "Unexpected error while creating Transaction.");
         }
     }
 
@@ -64,11 +76,16 @@ public class BillingProfileService : IBillingProfileService
             existing.BillingAddress = model.BillingAddress;
             existing.PaymentTerms = model.PaymentTerms;
 
-            await _repository.UpdateAsync(existing, cancellationToken);
+            await _telemetry.Execute(
+                "BillingProfile",
+                "UpdateBillingProfile",
+                () => _repository.UpdateAsync(existing, cancellationToken));
         }
         catch (Exception ex)
         {
-            _logger.LogError($"Unexpected Error: {ex.Message}");
+            _logger.LogError(
+                    ex,
+                    "Unexpected error while creating Transaction.");
             return false;
         }
         return true;
@@ -90,36 +107,140 @@ public class BillingProfileService : IBillingProfileService
 
         try
         {
-            await _repository.DeleteAsync(existing, cancellationToken);
+            await _telemetry.Execute(
+                "BillingProfile",
+                "UpdateBillingProfile",
+                () => _repository.DeleteAsync(existing, cancellationToken));
         }
         catch (Exception ex)
         {
-            _logger.LogError($"Unexpected Error: {ex.Message}");
+            _logger.LogError(
+                    ex,
+                    "Unexpected error while creating Transaction.");
             return false;
         }
         return true;
-
     }
 
     public async Task<bool> AssignAdvertiser(AssociationRequest request, CancellationToken cancellationToken) {
+
+        var parent = await _repository.GetByIdAsync(request.ParentId, cancellationToken);
+        if (parent is null)
+        {
+            _logger.LogError("No BillingProfile found using Id {ParentId}", request.ParentId);
+            return false;
+        }
+
+        try
+        {
+            var childRequest = new IdentifierRequest
+            {
+                Id = request.ChildId,
+            };
+
+            var child = await _serviceResolver.Get<AdvertiserService>().Get(childRequest, cancellationToken);
+            parent.Advertiser = child;
+            await Update( parent, cancellationToken );
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(
+                    ex,
+                    "Unexpected error while creating Transaction.");
+            return false;
+        }
         return true;
     }
+
     public async Task<bool> UnassignAdvertiser(AssociationRequest request, CancellationToken cancellationToken) {
+        var parent = await _repository.GetByIdAsync(request.ParentId, cancellationToken);
+        if (parent is null)
+        {
+            _logger.LogError("No BillingProfile found using Id {ParentId}", request.ParentId);
+            return false;
+        }
+
+        try
+        {
+            parent.Advertiser = null;
+            await Update( parent, cancellationToken );
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(
+                    ex,
+                    "Unexpected error while creating Transaction.");
+            return false;
+        }
         return true;
     }
 
 
     public async Task<bool> AddToPaymentMethods(MultipleAssociationRequest request, CancellationToken cancellationToken) {
+        try {
+            await _telemetry.Execute(
+                "BillingProfile",
+                "AddToPaymentMethods",
+                () => _repository.AddToPaymentMethodsAsync(request, cancellationToken));
+        }
+        catch (Exception ex)
+        {
+           _logger.LogError(
+                   ex,
+                   "Unexpected error while creating Transaction.");
+            return false;
+        }
         return true;
     }
+
     public async Task<bool> RemoveFromPaymentMethods(MultipleAssociationRequest request, CancellationToken cancellationToken) {
+        try {
+            await _telemetry.Execute(
+                "BillingProfile",
+                "RemoveFromPaymentMethods",
+                () => _repository.RemoveFromPaymentMethodsAsync(request, cancellationToken));
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(
+                    ex,
+                    "Unexpected error while creating Transaction.");
+            return false;
+        }
         return true;
     }
 
     public async Task<bool> AddToAdAccounts(MultipleAssociationRequest request, CancellationToken cancellationToken) {
+        try {
+            await _telemetry.Execute(
+                "BillingProfile",
+                "AddToAdAccounts",
+                () => _repository.AddToAdAccountsAsync(request, cancellationToken));
+        }
+        catch (Exception ex)
+        {
+           _logger.LogError(
+                   ex,
+                   "Unexpected error while creating Transaction.");
+            return false;
+        }
         return true;
     }
+
     public async Task<bool> RemoveFromAdAccounts(MultipleAssociationRequest request, CancellationToken cancellationToken) {
+        try {
+            await _telemetry.Execute(
+                "BillingProfile",
+                "RemoveFromAdAccounts",
+                () => _repository.RemoveFromAdAccountsAsync(request, cancellationToken));
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(
+                    ex,
+                    "Unexpected error while creating Transaction.");
+            return false;
+        }
         return true;
     }
 

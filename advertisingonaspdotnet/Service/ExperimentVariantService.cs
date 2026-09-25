@@ -1,6 +1,8 @@
+
 using advertisingonaspdotnet.Domain;
 using advertisingonaspdotnet.Persistence;
 using advertisingonaspdotnet.Contracts;
+using advertisingonaspdotnet.Telemetry;
 
 namespace advertisingonaspdotnet.Service;
 
@@ -11,7 +13,6 @@ public interface IExperimentVariantService {
     Task<ExperimentVariant?> Get(IdentifierRequest identifier, CancellationToken cancellationToken);
     Task<IReadOnlyList<ExperimentVariant>> GetAll(CancellationToken cancellationToken);
     Task<bool> Delete(IdentifierRequest identifier, CancellationToken cancellationToken);
-
     // ------------------------------
     // Single Associations
     // -------------------------------
@@ -27,29 +28,38 @@ public interface IExperimentVariantService {
 
 public class ExperimentVariantService : IExperimentVariantService
 {
+    private readonly ApplicationTelemetry _telemetry;
     private readonly IExperimentVariantRepository _repository;
     private readonly ILogger<ExperimentVariantService> _logger;
+    private readonly IServiceResolver _serviceResolver;
+
 
     public ExperimentVariantService(
-        IExperimentVariantRepository repository, ILogger<ExperimentVariantService> logger )
+        ApplicationTelemetry telemetry,
+        IExperimentVariantRepository repository,
+        ILogger<ExperimentVariantService> logger,
+        IServiceResolver serviceResolver)
     {
+        _telemetry = telemetry;
         _repository = repository;
         _logger = logger;
+        _serviceResolver = serviceResolver;
     }
-
 
     public async Task Create(ExperimentVariant model, CancellationToken cancellationToken)
     {
-
- 
- 
-         try
+        try
         {
-            await _repository.AddAsync(model, cancellationToken);
+            await _telemetry.Execute(
+                "ExperimentVariant",
+                "CreateExperimentVariant",
+                () => _repository.AddAsync(model, cancellationToken));
         }
         catch (Exception ex)
         {
-            _logger.LogError($"Unexpected Error: {ex.Message}");
+            _logger.LogError(
+                    ex,
+                    "Unexpected error while creating Transaction.");
         }
     }
 
@@ -64,11 +74,16 @@ public class ExperimentVariantService : IExperimentVariantService
             existing.Name = model.Name;
             existing.Allocation = model.Allocation;
 
-            await _repository.UpdateAsync(existing, cancellationToken);
+            await _telemetry.Execute(
+                "ExperimentVariant",
+                "UpdateExperimentVariant",
+                () => _repository.UpdateAsync(existing, cancellationToken));
         }
         catch (Exception ex)
         {
-            _logger.LogError($"Unexpected Error: {ex.Message}");
+            _logger.LogError(
+                    ex,
+                    "Unexpected error while creating Transaction.");
             return false;
         }
         return true;
@@ -90,35 +105,177 @@ public class ExperimentVariantService : IExperimentVariantService
 
         try
         {
-            await _repository.DeleteAsync(existing, cancellationToken);
+            await _telemetry.Execute(
+                "ExperimentVariant",
+                "UpdateExperimentVariant",
+                () => _repository.DeleteAsync(existing, cancellationToken));
         }
         catch (Exception ex)
         {
-            _logger.LogError($"Unexpected Error: {ex.Message}");
+            _logger.LogError(
+                    ex,
+                    "Unexpected error while creating Transaction.");
             return false;
         }
         return true;
-
     }
 
     public async Task<bool> AssignExperiment(AssociationRequest request, CancellationToken cancellationToken) {
+
+        var parent = await _repository.GetByIdAsync(request.ParentId, cancellationToken);
+        if (parent is null)
+        {
+            _logger.LogError("No ExperimentVariant found using Id {ParentId}", request.ParentId);
+            return false;
+        }
+
+        try
+        {
+            var childRequest = new IdentifierRequest
+            {
+                Id = request.ChildId,
+            };
+
+            var child = await _serviceResolver.Get<ExperimentService>().Get(childRequest, cancellationToken);
+            parent.Experiment = child;
+            await Update( parent, cancellationToken );
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(
+                    ex,
+                    "Unexpected error while creating Transaction.");
+            return false;
+        }
         return true;
     }
+
     public async Task<bool> UnassignExperiment(AssociationRequest request, CancellationToken cancellationToken) {
+        var parent = await _repository.GetByIdAsync(request.ParentId, cancellationToken);
+        if (parent is null)
+        {
+            _logger.LogError("No ExperimentVariant found using Id {ParentId}", request.ParentId);
+            return false;
+        }
+
+        try
+        {
+            parent.Experiment = null;
+            await Update( parent, cancellationToken );
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(
+                    ex,
+                    "Unexpected error while creating Transaction.");
+            return false;
+        }
         return true;
     }
 
     public async Task<bool> AssignCreativeVariation(AssociationRequest request, CancellationToken cancellationToken) {
+
+        var parent = await _repository.GetByIdAsync(request.ParentId, cancellationToken);
+        if (parent is null)
+        {
+            _logger.LogError("No ExperimentVariant found using Id {ParentId}", request.ParentId);
+            return false;
+        }
+
+        try
+        {
+            var childRequest = new IdentifierRequest
+            {
+                Id = request.ChildId,
+            };
+
+            var child = await _serviceResolver.Get<CreativeVariationService>().Get(childRequest, cancellationToken);
+            parent.CreativeVariation = child;
+            await Update( parent, cancellationToken );
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(
+                    ex,
+                    "Unexpected error while creating Transaction.");
+            return false;
+        }
         return true;
     }
+
     public async Task<bool> UnassignCreativeVariation(AssociationRequest request, CancellationToken cancellationToken) {
+        var parent = await _repository.GetByIdAsync(request.ParentId, cancellationToken);
+        if (parent is null)
+        {
+            _logger.LogError("No ExperimentVariant found using Id {ParentId}", request.ParentId);
+            return false;
+        }
+
+        try
+        {
+            parent.CreativeVariation = null;
+            await Update( parent, cancellationToken );
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(
+                    ex,
+                    "Unexpected error while creating Transaction.");
+            return false;
+        }
         return true;
     }
 
     public async Task<bool> AssignLineItem(AssociationRequest request, CancellationToken cancellationToken) {
+
+        var parent = await _repository.GetByIdAsync(request.ParentId, cancellationToken);
+        if (parent is null)
+        {
+            _logger.LogError("No ExperimentVariant found using Id {ParentId}", request.ParentId);
+            return false;
+        }
+
+        try
+        {
+            var childRequest = new IdentifierRequest
+            {
+                Id = request.ChildId,
+            };
+
+            var child = await _serviceResolver.Get<LineItemService>().Get(childRequest, cancellationToken);
+            parent.LineItem = child;
+            await Update( parent, cancellationToken );
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(
+                    ex,
+                    "Unexpected error while creating Transaction.");
+            return false;
+        }
         return true;
     }
+
     public async Task<bool> UnassignLineItem(AssociationRequest request, CancellationToken cancellationToken) {
+        var parent = await _repository.GetByIdAsync(request.ParentId, cancellationToken);
+        if (parent is null)
+        {
+            _logger.LogError("No ExperimentVariant found using Id {ParentId}", request.ParentId);
+            return false;
+        }
+
+        try
+        {
+            parent.LineItem = null;
+            await Update( parent, cancellationToken );
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(
+                    ex,
+                    "Unexpected error while creating Transaction.");
+            return false;
+        }
         return true;
     }
 

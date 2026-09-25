@@ -1,4 +1,5 @@
 using advertisingonaspdotnet.Domain;
+using advertisingonaspdotnet.Contracts;
 
 namespace advertisingonaspdotnet.Persistence;
 
@@ -9,4 +10,6 @@ public interface IPlacementRepository
     Task AddAsync(Placement placement, CancellationToken cancellationToken);
     Task UpdateAsync(Placement placement, CancellationToken cancellationToken);
     Task DeleteAsync(Placement placement, CancellationToken cancellationToken);
+
+
 }

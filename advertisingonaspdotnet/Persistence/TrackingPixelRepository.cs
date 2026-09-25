@@ -1,4 +1,7 @@
+
+using advertisingonaspdotnet.Contracts;
 using advertisingonaspdotnet.Domain;
+
 using Microsoft.EntityFrameworkCore;
 
 namespace advertisingonaspdotnet.Persistence;
@@ -46,4 +49,41 @@ public class TrackingPixelRepository : ITrackingPixelRepository
         _db.TrackingPixels.Remove(trackingPixel);
         await _db.SaveChangesAsync(cancellationToken);
     }
+
+
+    public async Task AddToConversionEventsAsync(
+        MultipleAssociationRequest request,
+        CancellationToken cancellationToken)
+    {
+        await _db.ConversionEvents
+            .Where(conversionEvent =>
+                request.ChildIds.Contains(conversionEvent.Id))
+            .ExecuteUpdateAsync(setters =>
+                setters.SetProperty(
+                    conversionEvent =>
+                        EF.Property<Guid?>(
+                            conversionEvent,
+                            "GeoRegion_Id"),
+                    request.ParentId));
+    }
+
+    public async Task RemoveFromConversionEventsAsync(
+        MultipleAssociationRequest request,
+        CancellationToken cancellationToken)
+    {
+        await _db.ConversionEvents
+            .Where(conversionEvent =>
+                request.ChildIds.Contains(conversionEvent.Id) &&
+                EF.Property<Guid?>(
+                    conversionEvent,
+                    "GeoRegion_Id") == request.ParentId)
+            .ExecuteUpdateAsync(setters =>
+                setters.SetProperty(
+                    conversionEvent =>
+                        EF.Property<Guid?>(
+                            conversionEvent,
+                            "GeoRegion_Id"),
+                    (Guid?)null));
+    }
+
 }

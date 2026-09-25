@@ -1,6 +1,8 @@
+
 using advertisingonaspdotnet.Domain;
 using advertisingonaspdotnet.Persistence;
 using advertisingonaspdotnet.Contracts;
+using advertisingonaspdotnet.Telemetry;
 
 namespace advertisingonaspdotnet.Service;
 
@@ -11,7 +13,6 @@ public interface IPlacementService {
     Task<Placement?> Get(IdentifierRequest identifier, CancellationToken cancellationToken);
     Task<IReadOnlyList<Placement>> GetAll(CancellationToken cancellationToken);
     Task<bool> Delete(IdentifierRequest identifier, CancellationToken cancellationToken);
-
     // ------------------------------
     // Single Associations
     // -------------------------------
@@ -27,29 +28,38 @@ public interface IPlacementService {
 
 public class PlacementService : IPlacementService
 {
+    private readonly ApplicationTelemetry _telemetry;
     private readonly IPlacementRepository _repository;
     private readonly ILogger<PlacementService> _logger;
+    private readonly IServiceResolver _serviceResolver;
+
 
     public PlacementService(
-        IPlacementRepository repository, ILogger<PlacementService> logger )
+        ApplicationTelemetry telemetry,
+        IPlacementRepository repository,
+        ILogger<PlacementService> logger,
+        IServiceResolver serviceResolver)
     {
+        _telemetry = telemetry;
         _repository = repository;
         _logger = logger;
+        _serviceResolver = serviceResolver;
     }
-
 
     public async Task Create(Placement model, CancellationToken cancellationToken)
     {
-
- 
- 
-         try
+        try
         {
-            await _repository.AddAsync(model, cancellationToken);
+            await _telemetry.Execute(
+                "Placement",
+                "CreatePlacement",
+                () => _repository.AddAsync(model, cancellationToken));
         }
         catch (Exception ex)
         {
-            _logger.LogError($"Unexpected Error: {ex.Message}");
+            _logger.LogError(
+                    ex,
+                    "Unexpected error while creating Transaction.");
         }
     }
 
@@ -65,11 +75,16 @@ public class PlacementService : IPlacementService
             existing.Flight = model.Flight;
             existing.GoalImpressions = model.GoalImpressions;
 
-            await _repository.UpdateAsync(existing, cancellationToken);
+            await _telemetry.Execute(
+                "Placement",
+                "UpdatePlacement",
+                () => _repository.UpdateAsync(existing, cancellationToken));
         }
         catch (Exception ex)
         {
-            _logger.LogError($"Unexpected Error: {ex.Message}");
+            _logger.LogError(
+                    ex,
+                    "Unexpected error while creating Transaction.");
             return false;
         }
         return true;
@@ -91,35 +106,177 @@ public class PlacementService : IPlacementService
 
         try
         {
-            await _repository.DeleteAsync(existing, cancellationToken);
+            await _telemetry.Execute(
+                "Placement",
+                "UpdatePlacement",
+                () => _repository.DeleteAsync(existing, cancellationToken));
         }
         catch (Exception ex)
         {
-            _logger.LogError($"Unexpected Error: {ex.Message}");
+            _logger.LogError(
+                    ex,
+                    "Unexpected error while creating Transaction.");
             return false;
         }
         return true;
-
     }
 
     public async Task<bool> AssignLineItem(AssociationRequest request, CancellationToken cancellationToken) {
+
+        var parent = await _repository.GetByIdAsync(request.ParentId, cancellationToken);
+        if (parent is null)
+        {
+            _logger.LogError("No Placement found using Id {ParentId}", request.ParentId);
+            return false;
+        }
+
+        try
+        {
+            var childRequest = new IdentifierRequest
+            {
+                Id = request.ChildId,
+            };
+
+            var child = await _serviceResolver.Get<LineItemService>().Get(childRequest, cancellationToken);
+            parent.LineItem = child;
+            await Update( parent, cancellationToken );
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(
+                    ex,
+                    "Unexpected error while creating Transaction.");
+            return false;
+        }
         return true;
     }
+
     public async Task<bool> UnassignLineItem(AssociationRequest request, CancellationToken cancellationToken) {
+        var parent = await _repository.GetByIdAsync(request.ParentId, cancellationToken);
+        if (parent is null)
+        {
+            _logger.LogError("No Placement found using Id {ParentId}", request.ParentId);
+            return false;
+        }
+
+        try
+        {
+            parent.LineItem = null;
+            await Update( parent, cancellationToken );
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(
+                    ex,
+                    "Unexpected error while creating Transaction.");
+            return false;
+        }
         return true;
     }
 
     public async Task<bool> AssignAdSlot(AssociationRequest request, CancellationToken cancellationToken) {
+
+        var parent = await _repository.GetByIdAsync(request.ParentId, cancellationToken);
+        if (parent is null)
+        {
+            _logger.LogError("No Placement found using Id {ParentId}", request.ParentId);
+            return false;
+        }
+
+        try
+        {
+            var childRequest = new IdentifierRequest
+            {
+                Id = request.ChildId,
+            };
+
+            var child = await _serviceResolver.Get<AdSlotService>().Get(childRequest, cancellationToken);
+            parent.AdSlot = child;
+            await Update( parent, cancellationToken );
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(
+                    ex,
+                    "Unexpected error while creating Transaction.");
+            return false;
+        }
         return true;
     }
+
     public async Task<bool> UnassignAdSlot(AssociationRequest request, CancellationToken cancellationToken) {
+        var parent = await _repository.GetByIdAsync(request.ParentId, cancellationToken);
+        if (parent is null)
+        {
+            _logger.LogError("No Placement found using Id {ParentId}", request.ParentId);
+            return false;
+        }
+
+        try
+        {
+            parent.AdSlot = null;
+            await Update( parent, cancellationToken );
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(
+                    ex,
+                    "Unexpected error while creating Transaction.");
+            return false;
+        }
         return true;
     }
 
     public async Task<bool> AssignDeal(AssociationRequest request, CancellationToken cancellationToken) {
+
+        var parent = await _repository.GetByIdAsync(request.ParentId, cancellationToken);
+        if (parent is null)
+        {
+            _logger.LogError("No Placement found using Id {ParentId}", request.ParentId);
+            return false;
+        }
+
+        try
+        {
+            var childRequest = new IdentifierRequest
+            {
+                Id = request.ChildId,
+            };
+
+            var child = await _serviceResolver.Get<DealService>().Get(childRequest, cancellationToken);
+            parent.Deal = child;
+            await Update( parent, cancellationToken );
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(
+                    ex,
+                    "Unexpected error while creating Transaction.");
+            return false;
+        }
         return true;
     }
+
     public async Task<bool> UnassignDeal(AssociationRequest request, CancellationToken cancellationToken) {
+        var parent = await _repository.GetByIdAsync(request.ParentId, cancellationToken);
+        if (parent is null)
+        {
+            _logger.LogError("No Placement found using Id {ParentId}", request.ParentId);
+            return false;
+        }
+
+        try
+        {
+            parent.Deal = null;
+            await Update( parent, cancellationToken );
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(
+                    ex,
+                    "Unexpected error while creating Transaction.");
+            return false;
+        }
         return true;
     }
 

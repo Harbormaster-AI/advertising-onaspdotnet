@@ -1,4 +1,5 @@
 using advertisingonaspdotnet.Domain;
+using advertisingonaspdotnet.Contracts;
 
 namespace advertisingonaspdotnet.Persistence;
 
@@ -9,4 +10,6 @@ public interface IConversionEventRepository
     Task AddAsync(ConversionEvent conversionEvent, CancellationToken cancellationToken);
     Task UpdateAsync(ConversionEvent conversionEvent, CancellationToken cancellationToken);
     Task DeleteAsync(ConversionEvent conversionEvent, CancellationToken cancellationToken);
+
+
 }

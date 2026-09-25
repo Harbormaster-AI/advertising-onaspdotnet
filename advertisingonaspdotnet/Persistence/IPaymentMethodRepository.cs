@@ -1,4 +1,5 @@
 using advertisingonaspdotnet.Domain;
+using advertisingonaspdotnet.Contracts;
 
 namespace advertisingonaspdotnet.Persistence;
 
@@ -9,4 +10,6 @@ public interface IPaymentMethodRepository
     Task AddAsync(PaymentMethod paymentMethod, CancellationToken cancellationToken);
     Task UpdateAsync(PaymentMethod paymentMethod, CancellationToken cancellationToken);
     Task DeleteAsync(PaymentMethod paymentMethod, CancellationToken cancellationToken);
+
+
 }

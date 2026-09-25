@@ -1,6 +1,8 @@
+
 using advertisingonaspdotnet.Domain;
 using advertisingonaspdotnet.Persistence;
 using advertisingonaspdotnet.Contracts;
+using advertisingonaspdotnet.Telemetry;
 
 namespace advertisingonaspdotnet.Service;
 
@@ -11,7 +13,6 @@ public interface IExperimentService {
     Task<Experiment?> Get(IdentifierRequest identifier, CancellationToken cancellationToken);
     Task<IReadOnlyList<Experiment>> GetAll(CancellationToken cancellationToken);
     Task<bool> Delete(IdentifierRequest identifier, CancellationToken cancellationToken);
-
     // ------------------------------
     // Single Associations
     // -------------------------------
@@ -25,27 +26,38 @@ public interface IExperimentService {
 
 public class ExperimentService : IExperimentService
 {
+    private readonly ApplicationTelemetry _telemetry;
     private readonly IExperimentRepository _repository;
     private readonly ILogger<ExperimentService> _logger;
+    private readonly IServiceResolver _serviceResolver;
+
 
     public ExperimentService(
-        IExperimentRepository repository, ILogger<ExperimentService> logger )
+        ApplicationTelemetry telemetry,
+        IExperimentRepository repository,
+        ILogger<ExperimentService> logger,
+        IServiceResolver serviceResolver)
     {
+        _telemetry = telemetry;
         _repository = repository;
         _logger = logger;
+        _serviceResolver = serviceResolver;
     }
-
 
     public async Task Create(Experiment model, CancellationToken cancellationToken)
     {
-
-         try
+        try
         {
-            await _repository.AddAsync(model, cancellationToken);
+            await _telemetry.Execute(
+                "Experiment",
+                "CreateExperiment",
+                () => _repository.AddAsync(model, cancellationToken));
         }
         catch (Exception ex)
         {
-            _logger.LogError($"Unexpected Error: {ex.Message}");
+            _logger.LogError(
+                    ex,
+                    "Unexpected error while creating Transaction.");
         }
     }
 
@@ -63,11 +75,16 @@ public class ExperimentService : IExperimentService
             existing.EndDate = model.EndDate;
             existing.Status = model.Status;
 
-            await _repository.UpdateAsync(existing, cancellationToken);
+            await _telemetry.Execute(
+                "Experiment",
+                "UpdateExperiment",
+                () => _repository.UpdateAsync(existing, cancellationToken));
         }
         catch (Exception ex)
         {
-            _logger.LogError($"Unexpected Error: {ex.Message}");
+            _logger.LogError(
+                    ex,
+                    "Unexpected error while creating Transaction.");
             return false;
         }
         return true;
@@ -89,29 +106,106 @@ public class ExperimentService : IExperimentService
 
         try
         {
-            await _repository.DeleteAsync(existing, cancellationToken);
+            await _telemetry.Execute(
+                "Experiment",
+                "UpdateExperiment",
+                () => _repository.DeleteAsync(existing, cancellationToken));
         }
         catch (Exception ex)
         {
-            _logger.LogError($"Unexpected Error: {ex.Message}");
+            _logger.LogError(
+                    ex,
+                    "Unexpected error while creating Transaction.");
             return false;
         }
         return true;
-
     }
 
     public async Task<bool> AssignCampaign(AssociationRequest request, CancellationToken cancellationToken) {
+
+        var parent = await _repository.GetByIdAsync(request.ParentId, cancellationToken);
+        if (parent is null)
+        {
+            _logger.LogError("No Experiment found using Id {ParentId}", request.ParentId);
+            return false;
+        }
+
+        try
+        {
+            var childRequest = new IdentifierRequest
+            {
+                Id = request.ChildId,
+            };
+
+            var child = await _serviceResolver.Get<CampaignService>().Get(childRequest, cancellationToken);
+            parent.Campaign = child;
+            await Update( parent, cancellationToken );
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(
+                    ex,
+                    "Unexpected error while creating Transaction.");
+            return false;
+        }
         return true;
     }
+
     public async Task<bool> UnassignCampaign(AssociationRequest request, CancellationToken cancellationToken) {
+        var parent = await _repository.GetByIdAsync(request.ParentId, cancellationToken);
+        if (parent is null)
+        {
+            _logger.LogError("No Experiment found using Id {ParentId}", request.ParentId);
+            return false;
+        }
+
+        try
+        {
+            parent.Campaign = null;
+            await Update( parent, cancellationToken );
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(
+                    ex,
+                    "Unexpected error while creating Transaction.");
+            return false;
+        }
         return true;
     }
 
 
     public async Task<bool> AddToVariants(MultipleAssociationRequest request, CancellationToken cancellationToken) {
+        try {
+            await _telemetry.Execute(
+                "Experiment",
+                "AddToVariants",
+                () => _repository.AddToVariantsAsync(request, cancellationToken));
+        }
+        catch (Exception ex)
+        {
+           _logger.LogError(
+                   ex,
+                   "Unexpected error while creating Transaction.");
+            return false;
+        }
         return true;
     }
+
     public async Task<bool> RemoveFromVariants(MultipleAssociationRequest request, CancellationToken cancellationToken) {
+        try {
+            await _telemetry.Execute(
+                "Experiment",
+                "RemoveFromVariants",
+                () => _repository.RemoveFromVariantsAsync(request, cancellationToken));
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(
+                    ex,
+                    "Unexpected error while creating Transaction.");
+            return false;
+        }
         return true;
     }
 

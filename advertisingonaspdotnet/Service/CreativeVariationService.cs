@@ -1,6 +1,8 @@
+
 using advertisingonaspdotnet.Domain;
 using advertisingonaspdotnet.Persistence;
 using advertisingonaspdotnet.Contracts;
+using advertisingonaspdotnet.Telemetry;
 
 namespace advertisingonaspdotnet.Service;
 
@@ -11,7 +13,6 @@ public interface ICreativeVariationService {
     Task<CreativeVariation?> Get(IdentifierRequest identifier, CancellationToken cancellationToken);
     Task<IReadOnlyList<CreativeVariation>> GetAll(CancellationToken cancellationToken);
     Task<bool> Delete(IdentifierRequest identifier, CancellationToken cancellationToken);
-
     // ------------------------------
     // Single Associations
     // -------------------------------
@@ -23,27 +24,38 @@ public interface ICreativeVariationService {
 
 public class CreativeVariationService : ICreativeVariationService
 {
+    private readonly ApplicationTelemetry _telemetry;
     private readonly ICreativeVariationRepository _repository;
     private readonly ILogger<CreativeVariationService> _logger;
+    private readonly IServiceResolver _serviceResolver;
+
 
     public CreativeVariationService(
-        ICreativeVariationRepository repository, ILogger<CreativeVariationService> logger )
+        ApplicationTelemetry telemetry,
+        ICreativeVariationRepository repository,
+        ILogger<CreativeVariationService> logger,
+        IServiceResolver serviceResolver)
     {
+        _telemetry = telemetry;
         _repository = repository;
         _logger = logger;
+        _serviceResolver = serviceResolver;
     }
-
 
     public async Task Create(CreativeVariation model, CancellationToken cancellationToken)
     {
-
-         try
+        try
         {
-            await _repository.AddAsync(model, cancellationToken);
+            await _telemetry.Execute(
+                "CreativeVariation",
+                "CreateCreativeVariation",
+                () => _repository.AddAsync(model, cancellationToken));
         }
         catch (Exception ex)
         {
-            _logger.LogError($"Unexpected Error: {ex.Message}");
+            _logger.LogError(
+                    ex,
+                    "Unexpected error while creating Transaction.");
         }
     }
 
@@ -61,11 +73,16 @@ public class CreativeVariationService : ICreativeVariationService
             existing.BodyText = model.BodyText;
             existing.CallToAction = model.CallToAction;
 
-            await _repository.UpdateAsync(existing, cancellationToken);
+            await _telemetry.Execute(
+                "CreativeVariation",
+                "UpdateCreativeVariation",
+                () => _repository.UpdateAsync(existing, cancellationToken));
         }
         catch (Exception ex)
         {
-            _logger.LogError($"Unexpected Error: {ex.Message}");
+            _logger.LogError(
+                    ex,
+                    "Unexpected error while creating Transaction.");
             return false;
         }
         return true;
@@ -87,21 +104,71 @@ public class CreativeVariationService : ICreativeVariationService
 
         try
         {
-            await _repository.DeleteAsync(existing, cancellationToken);
+            await _telemetry.Execute(
+                "CreativeVariation",
+                "UpdateCreativeVariation",
+                () => _repository.DeleteAsync(existing, cancellationToken));
         }
         catch (Exception ex)
         {
-            _logger.LogError($"Unexpected Error: {ex.Message}");
+            _logger.LogError(
+                    ex,
+                    "Unexpected error while creating Transaction.");
             return false;
         }
         return true;
-
     }
 
     public async Task<bool> AssignCreativeAsset(AssociationRequest request, CancellationToken cancellationToken) {
+
+        var parent = await _repository.GetByIdAsync(request.ParentId, cancellationToken);
+        if (parent is null)
+        {
+            _logger.LogError("No CreativeVariation found using Id {ParentId}", request.ParentId);
+            return false;
+        }
+
+        try
+        {
+            var childRequest = new IdentifierRequest
+            {
+                Id = request.ChildId,
+            };
+
+            var child = await _serviceResolver.Get<CreativeAssetService>().Get(childRequest, cancellationToken);
+            parent.CreativeAsset = child;
+            await Update( parent, cancellationToken );
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(
+                    ex,
+                    "Unexpected error while creating Transaction.");
+            return false;
+        }
         return true;
     }
+
     public async Task<bool> UnassignCreativeAsset(AssociationRequest request, CancellationToken cancellationToken) {
+        var parent = await _repository.GetByIdAsync(request.ParentId, cancellationToken);
+        if (parent is null)
+        {
+            _logger.LogError("No CreativeVariation found using Id {ParentId}", request.ParentId);
+            return false;
+        }
+
+        try
+        {
+            parent.CreativeAsset = null;
+            await Update( parent, cancellationToken );
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(
+                    ex,
+                    "Unexpected error while creating Transaction.");
+            return false;
+        }
         return true;
     }
 

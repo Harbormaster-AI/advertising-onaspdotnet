@@ -1,4 +1,7 @@
+
+using advertisingonaspdotnet.Contracts;
 using advertisingonaspdotnet.Domain;
+
 using Microsoft.EntityFrameworkCore;
 
 namespace advertisingonaspdotnet.Persistence;
@@ -44,4 +47,41 @@ public class RateCardRepository : IRateCardRepository
         _db.RateCards.Remove(rateCard);
         await _db.SaveChangesAsync(cancellationToken);
     }
+
+
+    public async Task AddToRatesAsync(
+        MultipleAssociationRequest request,
+        CancellationToken cancellationToken)
+    {
+        await _db.Rates
+            .Where(rate =>
+                request.ChildIds.Contains(rate.Id))
+            .ExecuteUpdateAsync(setters =>
+                setters.SetProperty(
+                    rate =>
+                        EF.Property<Guid?>(
+                            rate,
+                            "GeoRegion_Id"),
+                    request.ParentId));
+    }
+
+    public async Task RemoveFromRatesAsync(
+        MultipleAssociationRequest request,
+        CancellationToken cancellationToken)
+    {
+        await _db.Rates
+            .Where(rate =>
+                request.ChildIds.Contains(rate.Id) &&
+                EF.Property<Guid?>(
+                    rate,
+                    "GeoRegion_Id") == request.ParentId)
+            .ExecuteUpdateAsync(setters =>
+                setters.SetProperty(
+                    rate =>
+                        EF.Property<Guid?>(
+                            rate,
+                            "GeoRegion_Id"),
+                    (Guid?)null));
+    }
+
 }

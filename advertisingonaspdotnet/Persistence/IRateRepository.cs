@@ -1,4 +1,5 @@
 using advertisingonaspdotnet.Domain;
+using advertisingonaspdotnet.Contracts;
 
 namespace advertisingonaspdotnet.Persistence;
 
@@ -9,4 +10,6 @@ public interface IRateRepository
     Task AddAsync(Rate rate, CancellationToken cancellationToken);
     Task UpdateAsync(Rate rate, CancellationToken cancellationToken);
     Task DeleteAsync(Rate rate, CancellationToken cancellationToken);
+
+
 }

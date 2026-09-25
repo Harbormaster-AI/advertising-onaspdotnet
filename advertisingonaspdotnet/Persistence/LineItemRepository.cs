@@ -1,4 +1,7 @@
+
+using advertisingonaspdotnet.Contracts;
 using advertisingonaspdotnet.Domain;
+
 using Microsoft.EntityFrameworkCore;
 
 namespace advertisingonaspdotnet.Persistence;
@@ -48,4 +51,113 @@ public class LineItemRepository : ILineItemRepository
         _db.LineItems.Remove(lineItem);
         await _db.SaveChangesAsync(cancellationToken);
     }
+
+
+    public async Task AddToPlacementsAsync(
+        MultipleAssociationRequest request,
+        CancellationToken cancellationToken)
+    {
+        await _db.Placements
+            .Where(placement =>
+                request.ChildIds.Contains(placement.Id))
+            .ExecuteUpdateAsync(setters =>
+                setters.SetProperty(
+                    placement =>
+                        EF.Property<Guid?>(
+                            placement,
+                            "GeoRegion_Id"),
+                    request.ParentId));
+    }
+
+    public async Task RemoveFromPlacementsAsync(
+        MultipleAssociationRequest request,
+        CancellationToken cancellationToken)
+    {
+        await _db.Placements
+            .Where(placement =>
+                request.ChildIds.Contains(placement.Id) &&
+                EF.Property<Guid?>(
+                    placement,
+                    "GeoRegion_Id") == request.ParentId)
+            .ExecuteUpdateAsync(setters =>
+                setters.SetProperty(
+                    placement =>
+                        EF.Property<Guid?>(
+                            placement,
+                            "GeoRegion_Id"),
+                    (Guid?)null));
+    }
+
+
+    public async Task AddToCreativesAsync(
+        MultipleAssociationRequest request,
+        CancellationToken cancellationToken)
+    {
+        await _db.CreativeAssets
+            .Where(creativeAsset =>
+                request.ChildIds.Contains(creativeAsset.Id))
+            .ExecuteUpdateAsync(setters =>
+                setters.SetProperty(
+                    creativeAsset =>
+                        EF.Property<Guid?>(
+                            creativeAsset,
+                            "GeoRegion_Id"),
+                    request.ParentId));
+    }
+
+    public async Task RemoveFromCreativesAsync(
+        MultipleAssociationRequest request,
+        CancellationToken cancellationToken)
+    {
+        await _db.CreativeAssets
+            .Where(creativeAsset =>
+                request.ChildIds.Contains(creativeAsset.Id) &&
+                EF.Property<Guid?>(
+                    creativeAsset,
+                    "GeoRegion_Id") == request.ParentId)
+            .ExecuteUpdateAsync(setters =>
+                setters.SetProperty(
+                    creativeAsset =>
+                        EF.Property<Guid?>(
+                            creativeAsset,
+                            "GeoRegion_Id"),
+                    (Guid?)null));
+    }
+
+
+    public async Task AddToPerformanceMetricsAsync(
+        MultipleAssociationRequest request,
+        CancellationToken cancellationToken)
+    {
+        await _db.PerformanceMetrics
+            .Where(performanceMetric =>
+                request.ChildIds.Contains(performanceMetric.Id))
+            .ExecuteUpdateAsync(setters =>
+                setters.SetProperty(
+                    performanceMetric =>
+                        EF.Property<Guid?>(
+                            performanceMetric,
+                            "GeoRegion_Id"),
+                    request.ParentId));
+    }
+
+    public async Task RemoveFromPerformanceMetricsAsync(
+        MultipleAssociationRequest request,
+        CancellationToken cancellationToken)
+    {
+        await _db.PerformanceMetrics
+            .Where(performanceMetric =>
+                request.ChildIds.Contains(performanceMetric.Id) &&
+                EF.Property<Guid?>(
+                    performanceMetric,
+                    "GeoRegion_Id") == request.ParentId)
+            .ExecuteUpdateAsync(setters =>
+                setters.SetProperty(
+                    performanceMetric =>
+                        EF.Property<Guid?>(
+                            performanceMetric,
+                            "GeoRegion_Id"),
+                    (Guid?)null));
+    }
+
 }

@@ -1,6 +1,8 @@
+
 using advertisingonaspdotnet.Domain;
 using advertisingonaspdotnet.Persistence;
 using advertisingonaspdotnet.Contracts;
+using advertisingonaspdotnet.Telemetry;
 
 namespace advertisingonaspdotnet.Service;
 
@@ -11,7 +13,6 @@ public interface ITrackingPixelService {
     Task<TrackingPixel?> Get(IdentifierRequest identifier, CancellationToken cancellationToken);
     Task<IReadOnlyList<TrackingPixel>> GetAll(CancellationToken cancellationToken);
     Task<bool> Delete(IdentifierRequest identifier, CancellationToken cancellationToken);
-
     // ------------------------------
     // Single Associations
     // -------------------------------
@@ -27,28 +28,38 @@ public interface ITrackingPixelService {
 
 public class TrackingPixelService : ITrackingPixelService
 {
+    private readonly ApplicationTelemetry _telemetry;
     private readonly ITrackingPixelRepository _repository;
     private readonly ILogger<TrackingPixelService> _logger;
+    private readonly IServiceResolver _serviceResolver;
+
 
     public TrackingPixelService(
-        ITrackingPixelRepository repository, ILogger<TrackingPixelService> logger )
+        ApplicationTelemetry telemetry,
+        ITrackingPixelRepository repository,
+        ILogger<TrackingPixelService> logger,
+        IServiceResolver serviceResolver)
     {
+        _telemetry = telemetry;
         _repository = repository;
         _logger = logger;
+        _serviceResolver = serviceResolver;
     }
-
 
     public async Task Create(TrackingPixel model, CancellationToken cancellationToken)
     {
-
- 
-         try
+        try
         {
-            await _repository.AddAsync(model, cancellationToken);
+            await _telemetry.Execute(
+                "TrackingPixel",
+                "CreateTrackingPixel",
+                () => _repository.AddAsync(model, cancellationToken));
         }
         catch (Exception ex)
         {
-            _logger.LogError($"Unexpected Error: {ex.Message}");
+            _logger.LogError(
+                    ex,
+                    "Unexpected error while creating Transaction.");
         }
     }
 
@@ -65,11 +76,16 @@ public class TrackingPixelService : ITrackingPixelService
             existing.EventType = model.EventType;
             existing.PixelType = model.PixelType;
 
-            await _repository.UpdateAsync(existing, cancellationToken);
+            await _telemetry.Execute(
+                "TrackingPixel",
+                "UpdateTrackingPixel",
+                () => _repository.UpdateAsync(existing, cancellationToken));
         }
         catch (Exception ex)
         {
-            _logger.LogError($"Unexpected Error: {ex.Message}");
+            _logger.LogError(
+                    ex,
+                    "Unexpected error while creating Transaction.");
             return false;
         }
         return true;
@@ -91,36 +107,159 @@ public class TrackingPixelService : ITrackingPixelService
 
         try
         {
-            await _repository.DeleteAsync(existing, cancellationToken);
+            await _telemetry.Execute(
+                "TrackingPixel",
+                "UpdateTrackingPixel",
+                () => _repository.DeleteAsync(existing, cancellationToken));
         }
         catch (Exception ex)
         {
-            _logger.LogError($"Unexpected Error: {ex.Message}");
+            _logger.LogError(
+                    ex,
+                    "Unexpected error while creating Transaction.");
             return false;
         }
         return true;
-
     }
 
     public async Task<bool> AssignCampaign(AssociationRequest request, CancellationToken cancellationToken) {
+
+        var parent = await _repository.GetByIdAsync(request.ParentId, cancellationToken);
+        if (parent is null)
+        {
+            _logger.LogError("No TrackingPixel found using Id {ParentId}", request.ParentId);
+            return false;
+        }
+
+        try
+        {
+            var childRequest = new IdentifierRequest
+            {
+                Id = request.ChildId,
+            };
+
+            var child = await _serviceResolver.Get<CampaignService>().Get(childRequest, cancellationToken);
+            parent.Campaign = child;
+            await Update( parent, cancellationToken );
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(
+                    ex,
+                    "Unexpected error while creating Transaction.");
+            return false;
+        }
         return true;
     }
+
     public async Task<bool> UnassignCampaign(AssociationRequest request, CancellationToken cancellationToken) {
+        var parent = await _repository.GetByIdAsync(request.ParentId, cancellationToken);
+        if (parent is null)
+        {
+            _logger.LogError("No TrackingPixel found using Id {ParentId}", request.ParentId);
+            return false;
+        }
+
+        try
+        {
+            parent.Campaign = null;
+            await Update( parent, cancellationToken );
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(
+                    ex,
+                    "Unexpected error while creating Transaction.");
+            return false;
+        }
         return true;
     }
 
     public async Task<bool> AssignAdvertiser(AssociationRequest request, CancellationToken cancellationToken) {
+
+        var parent = await _repository.GetByIdAsync(request.ParentId, cancellationToken);
+        if (parent is null)
+        {
+            _logger.LogError("No TrackingPixel found using Id {ParentId}", request.ParentId);
+            return false;
+        }
+
+        try
+        {
+            var childRequest = new IdentifierRequest
+            {
+                Id = request.ChildId,
+            };
+
+            var child = await _serviceResolver.Get<AdvertiserService>().Get(childRequest, cancellationToken);
+            parent.Advertiser = child;
+            await Update( parent, cancellationToken );
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(
+                    ex,
+                    "Unexpected error while creating Transaction.");
+            return false;
+        }
         return true;
     }
+
     public async Task<bool> UnassignAdvertiser(AssociationRequest request, CancellationToken cancellationToken) {
+        var parent = await _repository.GetByIdAsync(request.ParentId, cancellationToken);
+        if (parent is null)
+        {
+            _logger.LogError("No TrackingPixel found using Id {ParentId}", request.ParentId);
+            return false;
+        }
+
+        try
+        {
+            parent.Advertiser = null;
+            await Update( parent, cancellationToken );
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(
+                    ex,
+                    "Unexpected error while creating Transaction.");
+            return false;
+        }
         return true;
     }
 
 
     public async Task<bool> AddToConversionEvents(MultipleAssociationRequest request, CancellationToken cancellationToken) {
+        try {
+            await _telemetry.Execute(
+                "TrackingPixel",
+                "AddToConversionEvents",
+                () => _repository.AddToConversionEventsAsync(request, cancellationToken));
+        }
+        catch (Exception ex)
+        {
+           _logger.LogError(
+                   ex,
+                   "Unexpected error while creating Transaction.");
+            return false;
+        }
         return true;
     }
+
     public async Task<bool> RemoveFromConversionEvents(MultipleAssociationRequest request, CancellationToken cancellationToken) {
+        try {
+            await _telemetry.Execute(
+                "TrackingPixel",
+                "RemoveFromConversionEvents",
+                () => _repository.RemoveFromConversionEventsAsync(request, cancellationToken));
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(
+                    ex,
+                    "Unexpected error while creating Transaction.");
+            return false;
+        }
         return true;
     }
 

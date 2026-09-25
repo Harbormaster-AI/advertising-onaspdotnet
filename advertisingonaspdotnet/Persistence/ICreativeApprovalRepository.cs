@@ -1,4 +1,5 @@
 using advertisingonaspdotnet.Domain;
+using advertisingonaspdotnet.Contracts;
 
 namespace advertisingonaspdotnet.Persistence;
 
@@ -9,4 +10,6 @@ public interface ICreativeApprovalRepository
     Task AddAsync(CreativeApproval creativeApproval, CancellationToken cancellationToken);
     Task UpdateAsync(CreativeApproval creativeApproval, CancellationToken cancellationToken);
     Task DeleteAsync(CreativeApproval creativeApproval, CancellationToken cancellationToken);
+
+
 }

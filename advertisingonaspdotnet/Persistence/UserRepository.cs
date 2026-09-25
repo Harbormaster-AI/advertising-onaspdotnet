@@ -1,4 +1,7 @@
+
+using advertisingonaspdotnet.Contracts;
 using advertisingonaspdotnet.Domain;
+
 using Microsoft.EntityFrameworkCore;
 
 namespace advertisingonaspdotnet.Persistence;
@@ -44,4 +47,77 @@ public class UserRepository : IUserRepository
         _db.Users.Remove(user);
         await _db.SaveChangesAsync(cancellationToken);
     }
+
+
+    public async Task AddToTeamsAsync(
+        MultipleAssociationRequest request,
+        CancellationToken cancellationToken)
+    {
+        await _db.Teams
+            .Where(team =>
+                request.ChildIds.Contains(team.Id))
+            .ExecuteUpdateAsync(setters =>
+                setters.SetProperty(
+                    team =>
+                        EF.Property<Guid?>(
+                            team,
+                            "GeoRegion_Id"),
+                    request.ParentId));
+    }
+
+    public async Task RemoveFromTeamsAsync(
+        MultipleAssociationRequest request,
+        CancellationToken cancellationToken)
+    {
+        await _db.Teams
+            .Where(team =>
+                request.ChildIds.Contains(team.Id) &&
+                EF.Property<Guid?>(
+                    team,
+                    "GeoRegion_Id") == request.ParentId)
+            .ExecuteUpdateAsync(setters =>
+                setters.SetProperty(
+                    team =>
+                        EF.Property<Guid?>(
+                            team,
+                            "GeoRegion_Id"),
+                    (Guid?)null));
+    }
+
+
+    public async Task AddToAdAccountsAsync(
+        MultipleAssociationRequest request,
+        CancellationToken cancellationToken)
+    {
+        await _db.AdAccounts
+            .Where(adAccount =>
+                request.ChildIds.Contains(adAccount.Id))
+            .ExecuteUpdateAsync(setters =>
+                setters.SetProperty(
+                    adAccount =>
+                        EF.Property<Guid?>(
+                            adAccount,
+                            "GeoRegion_Id"),
+                    request.ParentId));
+    }
+
+    public async Task RemoveFromAdAccountsAsync(
+        MultipleAssociationRequest request,
+        CancellationToken cancellationToken)
+    {
+        await _db.AdAccounts
+            .Where(adAccount =>
+                request.ChildIds.Contains(adAccount.Id) &&
+                EF.Property<Guid?>(
+                    adAccount,
+                    "GeoRegion_Id") == request.ParentId)
+            .ExecuteUpdateAsync(setters =>
+                setters.SetProperty(
+                    adAccount =>
+                        EF.Property<Guid?>(
+                            adAccount,
+                            "GeoRegion_Id"),
+                    (Guid?)null));
+    }
+
 }

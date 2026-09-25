@@ -1,4 +1,5 @@
 using advertisingonaspdotnet.Domain;
+using advertisingonaspdotnet.Contracts;
 
 namespace advertisingonaspdotnet.Persistence;
 
@@ -9,4 +10,6 @@ public interface IReportRepository
     Task AddAsync(Report report, CancellationToken cancellationToken);
     Task UpdateAsync(Report report, CancellationToken cancellationToken);
     Task DeleteAsync(Report report, CancellationToken cancellationToken);
+
+
 }

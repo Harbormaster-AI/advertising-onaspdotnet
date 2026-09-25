@@ -1,4 +1,5 @@
 using advertisingonaspdotnet.Domain;
+using advertisingonaspdotnet.Contracts;
 
 namespace advertisingonaspdotnet.Persistence;
 
@@ -9,4 +10,6 @@ public interface IContentCategoryRepository
     Task AddAsync(ContentCategory contentCategory, CancellationToken cancellationToken);
     Task UpdateAsync(ContentCategory contentCategory, CancellationToken cancellationToken);
     Task DeleteAsync(ContentCategory contentCategory, CancellationToken cancellationToken);
+
+
 }

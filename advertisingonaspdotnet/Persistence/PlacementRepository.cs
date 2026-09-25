@@ -1,4 +1,7 @@
+
+using advertisingonaspdotnet.Contracts;
 using advertisingonaspdotnet.Domain;
+
 using Microsoft.EntityFrameworkCore;
 
 namespace advertisingonaspdotnet.Persistence;
@@ -48,4 +51,5 @@ public class PlacementRepository : IPlacementRepository
         _db.Placements.Remove(placement);
         await _db.SaveChangesAsync(cancellationToken);
     }
+
 }

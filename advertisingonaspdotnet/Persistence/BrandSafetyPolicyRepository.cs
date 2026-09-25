@@ -1,4 +1,7 @@
+
+using advertisingonaspdotnet.Contracts;
 using advertisingonaspdotnet.Domain;
+
 using Microsoft.EntityFrameworkCore;
 
 namespace advertisingonaspdotnet.Persistence;
@@ -42,4 +45,41 @@ public class BrandSafetyPolicyRepository : IBrandSafetyPolicyRepository
         _db.BrandSafetyPolicys.Remove(brandSafetyPolicy);
         await _db.SaveChangesAsync(cancellationToken);
     }
+
+
+    public async Task AddToTargetingProfilesAsync(
+        MultipleAssociationRequest request,
+        CancellationToken cancellationToken)
+    {
+        await _db.TargetingProfiles
+            .Where(targetingProfile =>
+                request.ChildIds.Contains(targetingProfile.Id))
+            .ExecuteUpdateAsync(setters =>
+                setters.SetProperty(
+                    targetingProfile =>
+                        EF.Property<Guid?>(
+                            targetingProfile,
+                            "GeoRegion_Id"),
+                    request.ParentId));
+    }
+
+    public async Task RemoveFromTargetingProfilesAsync(
+        MultipleAssociationRequest request,
+        CancellationToken cancellationToken)
+    {
+        await _db.TargetingProfiles
+            .Where(targetingProfile =>
+                request.ChildIds.Contains(targetingProfile.Id) &&
+                EF.Property<Guid?>(
+                    targetingProfile,
+                    "GeoRegion_Id") == request.ParentId)
+            .ExecuteUpdateAsync(setters =>
+                setters.SetProperty(
+                    targetingProfile =>
+                        EF.Property<Guid?>(
+                            targetingProfile,
+                            "GeoRegion_Id"),
+                    (Guid?)null));
+    }
+
 }

@@ -1,4 +1,7 @@
+
+using advertisingonaspdotnet.Contracts;
 using advertisingonaspdotnet.Domain;
+
 using Microsoft.EntityFrameworkCore;
 
 namespace advertisingonaspdotnet.Persistence;
@@ -52,4 +55,5 @@ public class PerformanceMetricRepository : IPerformanceMetricRepository
         _db.PerformanceMetrics.Remove(performanceMetric);
         await _db.SaveChangesAsync(cancellationToken);
     }
+
 }

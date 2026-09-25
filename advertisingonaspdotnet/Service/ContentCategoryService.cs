@@ -1,6 +1,8 @@
+
 using advertisingonaspdotnet.Domain;
 using advertisingonaspdotnet.Persistence;
 using advertisingonaspdotnet.Contracts;
+using advertisingonaspdotnet.Telemetry;
 
 namespace advertisingonaspdotnet.Service;
 
@@ -11,7 +13,6 @@ public interface IContentCategoryService {
     Task<ContentCategory?> Get(IdentifierRequest identifier, CancellationToken cancellationToken);
     Task<IReadOnlyList<ContentCategory>> GetAll(CancellationToken cancellationToken);
     Task<bool> Delete(IdentifierRequest identifier, CancellationToken cancellationToken);
-
     // ------------------------------
     // Single Associations
     // -------------------------------
@@ -21,26 +22,38 @@ public interface IContentCategoryService {
 
 public class ContentCategoryService : IContentCategoryService
 {
+    private readonly ApplicationTelemetry _telemetry;
     private readonly IContentCategoryRepository _repository;
     private readonly ILogger<ContentCategoryService> _logger;
+    private readonly IServiceResolver _serviceResolver;
+
 
     public ContentCategoryService(
-        IContentCategoryRepository repository, ILogger<ContentCategoryService> logger )
+        ApplicationTelemetry telemetry,
+        IContentCategoryRepository repository,
+        ILogger<ContentCategoryService> logger,
+        IServiceResolver serviceResolver)
     {
+        _telemetry = telemetry;
         _repository = repository;
         _logger = logger;
+        _serviceResolver = serviceResolver;
     }
-
 
     public async Task Create(ContentCategory model, CancellationToken cancellationToken)
     {
         try
         {
-            await _repository.AddAsync(model, cancellationToken);
+            await _telemetry.Execute(
+                "ContentCategory",
+                "CreateContentCategory",
+                () => _repository.AddAsync(model, cancellationToken));
         }
         catch (Exception ex)
         {
-            _logger.LogError($"Unexpected Error: {ex.Message}");
+            _logger.LogError(
+                    ex,
+                    "Unexpected error while creating Transaction.");
         }
     }
 
@@ -55,11 +68,16 @@ public class ContentCategoryService : IContentCategoryService
             existing.Code = model.Code;
             existing.Name = model.Name;
 
-            await _repository.UpdateAsync(existing, cancellationToken);
+            await _telemetry.Execute(
+                "ContentCategory",
+                "UpdateContentCategory",
+                () => _repository.UpdateAsync(existing, cancellationToken));
         }
         catch (Exception ex)
         {
-            _logger.LogError($"Unexpected Error: {ex.Message}");
+            _logger.LogError(
+                    ex,
+                    "Unexpected error while creating Transaction.");
             return false;
         }
         return true;
@@ -81,15 +99,19 @@ public class ContentCategoryService : IContentCategoryService
 
         try
         {
-            await _repository.DeleteAsync(existing, cancellationToken);
+            await _telemetry.Execute(
+                "ContentCategory",
+                "UpdateContentCategory",
+                () => _repository.DeleteAsync(existing, cancellationToken));
         }
         catch (Exception ex)
         {
-            _logger.LogError($"Unexpected Error: {ex.Message}");
+            _logger.LogError(
+                    ex,
+                    "Unexpected error while creating Transaction.");
             return false;
         }
         return true;
-
     }
 
 

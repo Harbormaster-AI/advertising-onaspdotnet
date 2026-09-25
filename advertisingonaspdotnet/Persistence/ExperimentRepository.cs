@@ -1,4 +1,7 @@
+
+using advertisingonaspdotnet.Contracts;
 using advertisingonaspdotnet.Domain;
+
 using Microsoft.EntityFrameworkCore;
 
 namespace advertisingonaspdotnet.Persistence;
@@ -44,4 +47,41 @@ public class ExperimentRepository : IExperimentRepository
         _db.Experiments.Remove(experiment);
         await _db.SaveChangesAsync(cancellationToken);
     }
+
+
+    public async Task AddToVariantsAsync(
+        MultipleAssociationRequest request,
+        CancellationToken cancellationToken)
+    {
+        await _db.ExperimentVariants
+            .Where(experimentVariant =>
+                request.ChildIds.Contains(experimentVariant.Id))
+            .ExecuteUpdateAsync(setters =>
+                setters.SetProperty(
+                    experimentVariant =>
+                        EF.Property<Guid?>(
+                            experimentVariant,
+                            "GeoRegion_Id"),
+                    request.ParentId));
+    }
+
+    public async Task RemoveFromVariantsAsync(
+        MultipleAssociationRequest request,
+        CancellationToken cancellationToken)
+    {
+        await _db.ExperimentVariants
+            .Where(experimentVariant =>
+                request.ChildIds.Contains(experimentVariant.Id) &&
+                EF.Property<Guid?>(
+                    experimentVariant,
+                    "GeoRegion_Id") == request.ParentId)
+            .ExecuteUpdateAsync(setters =>
+                setters.SetProperty(
+                    experimentVariant =>
+                        EF.Property<Guid?>(
+                            experimentVariant,
+                            "GeoRegion_Id"),
+                    (Guid?)null));
+    }
+
 }

@@ -1,4 +1,7 @@
+
+using advertisingonaspdotnet.Contracts;
 using advertisingonaspdotnet.Domain;
+
 using Microsoft.EntityFrameworkCore;
 
 namespace advertisingonaspdotnet.Persistence;
@@ -44,4 +47,77 @@ public class AdSlotRepository : IAdSlotRepository
         _db.AdSlots.Remove(adSlot);
         await _db.SaveChangesAsync(cancellationToken);
     }
+
+
+    public async Task AddToPlacementsAsync(
+        MultipleAssociationRequest request,
+        CancellationToken cancellationToken)
+    {
+        await _db.Placements
+            .Where(placement =>
+                request.ChildIds.Contains(placement.Id))
+            .ExecuteUpdateAsync(setters =>
+                setters.SetProperty(
+                    placement =>
+                        EF.Property<Guid?>(
+                            placement,
+                            "GeoRegion_Id"),
+                    request.ParentId));
+    }
+
+    public async Task RemoveFromPlacementsAsync(
+        MultipleAssociationRequest request,
+        CancellationToken cancellationToken)
+    {
+        await _db.Placements
+            .Where(placement =>
+                request.ChildIds.Contains(placement.Id) &&
+                EF.Property<Guid?>(
+                    placement,
+                    "GeoRegion_Id") == request.ParentId)
+            .ExecuteUpdateAsync(setters =>
+                setters.SetProperty(
+                    placement =>
+                        EF.Property<Guid?>(
+                            placement,
+                            "GeoRegion_Id"),
+                    (Guid?)null));
+    }
+
+
+    public async Task AddToRatesAsync(
+        MultipleAssociationRequest request,
+        CancellationToken cancellationToken)
+    {
+        await _db.Rates
+            .Where(rate =>
+                request.ChildIds.Contains(rate.Id))
+            .ExecuteUpdateAsync(setters =>
+                setters.SetProperty(
+                    rate =>
+                        EF.Property<Guid?>(
+                            rate,
+                            "GeoRegion_Id"),
+                    request.ParentId));
+    }
+
+    public async Task RemoveFromRatesAsync(
+        MultipleAssociationRequest request,
+        CancellationToken cancellationToken)
+    {
+        await _db.Rates
+            .Where(rate =>
+                request.ChildIds.Contains(rate.Id) &&
+                EF.Property<Guid?>(
+                    rate,
+                    "GeoRegion_Id") == request.ParentId)
+            .ExecuteUpdateAsync(setters =>
+                setters.SetProperty(
+                    rate =>
+                        EF.Property<Guid?>(
+                            rate,
+                            "GeoRegion_Id"),
+                    (Guid?)null));
+    }
+
 }

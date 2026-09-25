@@ -1,4 +1,5 @@
 using advertisingonaspdotnet.Domain;
+using advertisingonaspdotnet.Contracts;
 
 namespace advertisingonaspdotnet.Persistence;
 
@@ -9,4 +10,6 @@ public interface IDeviceCriterionRepository
     Task AddAsync(DeviceCriterion deviceCriterion, CancellationToken cancellationToken);
     Task UpdateAsync(DeviceCriterion deviceCriterion, CancellationToken cancellationToken);
     Task DeleteAsync(DeviceCriterion deviceCriterion, CancellationToken cancellationToken);
+
+
 }

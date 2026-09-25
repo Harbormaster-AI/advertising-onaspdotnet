@@ -1,4 +1,5 @@
 using advertisingonaspdotnet.Domain;
+using advertisingonaspdotnet.Contracts;
 
 namespace advertisingonaspdotnet.Persistence;
 
@@ -9,4 +10,6 @@ public interface IKPIRepository
     Task AddAsync(KPI kPI, CancellationToken cancellationToken);
     Task UpdateAsync(KPI kPI, CancellationToken cancellationToken);
     Task DeleteAsync(KPI kPI, CancellationToken cancellationToken);
+
+
 }

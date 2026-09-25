@@ -11,42 +11,42 @@ public class ApplicationDbContext : DbContext
     {
     }
 
-public DbSet<Agency> Agencys => Set<Agency>();
-public DbSet<Team> Teams => Set<Team>();
-public DbSet<User> Users => Set<User>();
-public DbSet<Advertiser> Advertisers => Set<Advertiser>();
-public DbSet<BillingProfile> BillingProfiles => Set<BillingProfile>();
-public DbSet<PaymentMethod> PaymentMethods => Set<PaymentMethod>();
-public DbSet<AdAccount> AdAccounts => Set<AdAccount>();
-public DbSet<DSP> DSPs => Set<DSP>();
-public DbSet<Campaign> Campaigns => Set<Campaign>();
-public DbSet<KPI> KPIs => Set<KPI>();
-public DbSet<AudienceSegment> AudienceSegments => Set<AudienceSegment>();
-public DbSet<DataProvider> DataProviders => Set<DataProvider>();
-public DbSet<LineItem> LineItems => Set<LineItem>();
-public DbSet<TargetingProfile> TargetingProfiles => Set<TargetingProfile>();
-public DbSet<DeviceCriterion> DeviceCriterions => Set<DeviceCriterion>();
-public DbSet<BrandSafetyPolicy> BrandSafetyPolicys => Set<BrandSafetyPolicy>();
-public DbSet<ContentCategory> ContentCategorys => Set<ContentCategory>();
-public DbSet<Publisher> Publishers => Set<Publisher>();
-public DbSet<InventorySource> InventorySources => Set<InventorySource>();
-public DbSet<AdSlot> AdSlots => Set<AdSlot>();
-public DbSet<Deal> Deals => Set<Deal>();
-public DbSet<Placement> Placements => Set<Placement>();
-public DbSet<CreativeAsset> CreativeAssets => Set<CreativeAsset>();
-public DbSet<CreativeFile> CreativeFiles => Set<CreativeFile>();
-public DbSet<CreativeVariation> CreativeVariations => Set<CreativeVariation>();
-public DbSet<CreativeApproval> CreativeApprovals => Set<CreativeApproval>();
-public DbSet<TrackingPixel> TrackingPixels => Set<TrackingPixel>();
-public DbSet<ConversionEvent> ConversionEvents => Set<ConversionEvent>();
-public DbSet<PerformanceMetric> PerformanceMetrics => Set<PerformanceMetric>();
-public DbSet<Report> Reports => Set<Report>();
-public DbSet<InsertionOrder> InsertionOrders => Set<InsertionOrder>();
-public DbSet<RateCard> RateCards => Set<RateCard>();
-public DbSet<Rate> Rates => Set<Rate>();
-public DbSet<Experiment> Experiments => Set<Experiment>();
-public DbSet<ExperimentVariant> ExperimentVariants => Set<ExperimentVariant>();
-public DbSet<GeoRegion> GeoRegions => Set<GeoRegion>();
+    public DbSet<Agency> Agencys => Set<Agency>();
+    public DbSet<Team> Teams => Set<Team>();
+    public DbSet<User> Users => Set<User>();
+    public DbSet<Advertiser> Advertisers => Set<Advertiser>();
+    public DbSet<BillingProfile> BillingProfiles => Set<BillingProfile>();
+    public DbSet<PaymentMethod> PaymentMethods => Set<PaymentMethod>();
+    public DbSet<AdAccount> AdAccounts => Set<AdAccount>();
+    public DbSet<DSP> DSPs => Set<DSP>();
+    public DbSet<Campaign> Campaigns => Set<Campaign>();
+    public DbSet<KPI> KPIs => Set<KPI>();
+    public DbSet<AudienceSegment> AudienceSegments => Set<AudienceSegment>();
+    public DbSet<DataProvider> DataProviders => Set<DataProvider>();
+    public DbSet<LineItem> LineItems => Set<LineItem>();
+    public DbSet<TargetingProfile> TargetingProfiles => Set<TargetingProfile>();
+    public DbSet<DeviceCriterion> DeviceCriterions => Set<DeviceCriterion>();
+    public DbSet<BrandSafetyPolicy> BrandSafetyPolicys => Set<BrandSafetyPolicy>();
+    public DbSet<ContentCategory> ContentCategorys => Set<ContentCategory>();
+    public DbSet<Publisher> Publishers => Set<Publisher>();
+    public DbSet<InventorySource> InventorySources => Set<InventorySource>();
+    public DbSet<AdSlot> AdSlots => Set<AdSlot>();
+    public DbSet<Deal> Deals => Set<Deal>();
+    public DbSet<Placement> Placements => Set<Placement>();
+    public DbSet<CreativeAsset> CreativeAssets => Set<CreativeAsset>();
+    public DbSet<CreativeFile> CreativeFiles => Set<CreativeFile>();
+    public DbSet<CreativeVariation> CreativeVariations => Set<CreativeVariation>();
+    public DbSet<CreativeApproval> CreativeApprovals => Set<CreativeApproval>();
+    public DbSet<TrackingPixel> TrackingPixels => Set<TrackingPixel>();
+    public DbSet<ConversionEvent> ConversionEvents => Set<ConversionEvent>();
+    public DbSet<PerformanceMetric> PerformanceMetrics => Set<PerformanceMetric>();
+    public DbSet<Report> Reports => Set<Report>();
+    public DbSet<InsertionOrder> InsertionOrders => Set<InsertionOrder>();
+    public DbSet<RateCard> RateCards => Set<RateCard>();
+    public DbSet<Rate> Rates => Set<Rate>();
+    public DbSet<Experiment> Experiments => Set<Experiment>();
+    public DbSet<ExperimentVariant> ExperimentVariants => Set<ExperimentVariant>();
+    public DbSet<GeoRegion> GeoRegions => Set<GeoRegion>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -57,25 +57,25 @@ public DbSet<GeoRegion> GeoRegions => Set<GeoRegion>();
         modelBuilder.Entity<Advertiser>()
             .HasOne<Agency>()
             .WithMany(parent => parent.Advertisers)
-            .HasForeignKey("Advertisers_Id");
+            .HasForeignKey("Agency_Id");
 
         // Agency has one or more Teams of type Team
         modelBuilder.Entity<Team>()
             .HasOne<Agency>()
             .WithMany(parent => parent.Teams)
-            .HasForeignKey("Teams_Id");
+            .HasForeignKey("Agency_Id");
 
         // Agency has one or more Users of type User
         modelBuilder.Entity<User>()
             .HasOne<Agency>()
             .WithMany(parent => parent.Users)
-            .HasForeignKey("Users_Id");
+            .HasForeignKey("Agency_Id");
 
         // Agency has one or more InsertionOrders of type InsertionOrder
         modelBuilder.Entity<InsertionOrder>()
             .HasOne<Agency>()
             .WithMany(parent => parent.InsertionOrders)
-            .HasForeignKey("InsertionOrders_Id");
+            .HasForeignKey("Agency_Id");
 
         // Team has one Agency of type Agency
         modelBuilder.Entity<Team>()
@@ -88,13 +88,13 @@ public DbSet<GeoRegion> GeoRegions => Set<GeoRegion>();
         modelBuilder.Entity<User>()
             .HasOne<Team>()
             .WithMany(parent => parent.Users)
-            .HasForeignKey("Users_Id");
+            .HasForeignKey("Team_Id");
 
         // Team has one or more AdAccounts of type AdAccount
         modelBuilder.Entity<AdAccount>()
             .HasOne<Team>()
             .WithMany(parent => parent.AdAccounts)
-            .HasForeignKey("AdAccounts_Id");
+            .HasForeignKey("Team_Id");
 
         // User has one Agency of type Agency
         modelBuilder.Entity<User>()
@@ -107,13 +107,13 @@ public DbSet<GeoRegion> GeoRegions => Set<GeoRegion>();
         modelBuilder.Entity<Team>()
             .HasOne<User>()
             .WithMany(parent => parent.Teams)
-            .HasForeignKey("Teams_Id");
+            .HasForeignKey("User_Id");
 
         // User has one or more AdAccounts of type AdAccount
         modelBuilder.Entity<AdAccount>()
             .HasOne<User>()
             .WithMany(parent => parent.AdAccounts)
-            .HasForeignKey("AdAccounts_Id");
+            .HasForeignKey("User_Id");
 
         // Advertiser has one Agency of type Agency
         modelBuilder.Entity<Advertiser>()
@@ -126,25 +126,25 @@ public DbSet<GeoRegion> GeoRegions => Set<GeoRegion>();
         modelBuilder.Entity<AdAccount>()
             .HasOne<Advertiser>()
             .WithMany(parent => parent.AdAccounts)
-            .HasForeignKey("AdAccounts_Id");
+            .HasForeignKey("Advertiser_Id");
 
         // Advertiser has one or more BillingProfiles of type BillingProfile
         modelBuilder.Entity<BillingProfile>()
             .HasOne<Advertiser>()
             .WithMany(parent => parent.BillingProfiles)
-            .HasForeignKey("BillingProfiles_Id");
+            .HasForeignKey("Advertiser_Id");
 
         // Advertiser has one or more Campaigns of type Campaign
         modelBuilder.Entity<Campaign>()
             .HasOne<Advertiser>()
             .WithMany(parent => parent.Campaigns)
-            .HasForeignKey("Campaigns_Id");
+            .HasForeignKey("Advertiser_Id");
 
         // Advertiser has one or more TrackingPixels of type TrackingPixel
         modelBuilder.Entity<TrackingPixel>()
             .HasOne<Advertiser>()
             .WithMany(parent => parent.TrackingPixels)
-            .HasForeignKey("TrackingPixels_Id");
+            .HasForeignKey("Advertiser_Id");
 
         // BillingProfile has one Advertiser of type Advertiser
         modelBuilder.Entity<BillingProfile>()
@@ -157,13 +157,13 @@ public DbSet<GeoRegion> GeoRegions => Set<GeoRegion>();
         modelBuilder.Entity<PaymentMethod>()
             .HasOne<BillingProfile>()
             .WithMany(parent => parent.PaymentMethods)
-            .HasForeignKey("PaymentMethods_Id");
+            .HasForeignKey("BillingProfile_Id");
 
         // BillingProfile has one or more AdAccounts of type AdAccount
         modelBuilder.Entity<AdAccount>()
             .HasOne<BillingProfile>()
             .WithMany(parent => parent.AdAccounts)
-            .HasForeignKey("AdAccounts_Id");
+            .HasForeignKey("BillingProfile_Id");
 
         // PaymentMethod has one BillingProfile of type BillingProfile
         modelBuilder.Entity<PaymentMethod>()
@@ -195,26 +195,26 @@ public DbSet<GeoRegion> GeoRegions => Set<GeoRegion>();
         modelBuilder.Entity<User>()
             .HasOne<AdAccount>()
             .WithMany(parent => parent.Users)
-            .HasForeignKey("Users_Id");
+            .HasForeignKey("AdAccount_Id");
 
         // AdAccount has one or more Campaigns of type Campaign
         modelBuilder.Entity<Campaign>()
             .HasOne<AdAccount>()
             .WithMany(parent => parent.Campaigns)
-            .HasForeignKey("Campaigns_Id");
+            .HasForeignKey("AdAccount_Id");
 
         // AdAccount has one or more PerformanceMetrics of type PerformanceMetric
         modelBuilder.Entity<PerformanceMetric>()
             .HasOne<AdAccount>()
             .WithMany(parent => parent.PerformanceMetrics)
-            .HasForeignKey("PerformanceMetrics_Id");
+            .HasForeignKey("AdAccount_Id");
 
 
         // DSP has one or more AdAccounts of type AdAccount
         modelBuilder.Entity<AdAccount>()
             .HasOne<DSP>()
             .WithMany(parent => parent.AdAccounts)
-            .HasForeignKey("AdAccounts_Id");
+            .HasForeignKey("DSP_Id");
 
         // Campaign has one AdAccount of type AdAccount
         modelBuilder.Entity<Campaign>()
@@ -233,31 +233,31 @@ public DbSet<GeoRegion> GeoRegions => Set<GeoRegion>();
         modelBuilder.Entity<LineItem>()
             .HasOne<Campaign>()
             .WithMany(parent => parent.LineItems)
-            .HasForeignKey("LineItems_Id");
+            .HasForeignKey("Campaign_Id");
 
         // Campaign has one or more Kpis of type KPI
         modelBuilder.Entity<KPI>()
             .HasOne<Campaign>()
             .WithMany(parent => parent.Kpis)
-            .HasForeignKey("Kpis_Id");
+            .HasForeignKey("Campaign_Id");
 
         // Campaign has one or more TrackingPixels of type TrackingPixel
         modelBuilder.Entity<TrackingPixel>()
             .HasOne<Campaign>()
             .WithMany(parent => parent.TrackingPixels)
-            .HasForeignKey("TrackingPixels_Id");
+            .HasForeignKey("Campaign_Id");
 
         // Campaign has one or more Audiences of type AudienceSegment
         modelBuilder.Entity<AudienceSegment>()
             .HasOne<Campaign>()
             .WithMany(parent => parent.Audiences)
-            .HasForeignKey("Audiences_Id");
+            .HasForeignKey("Campaign_Id");
 
         // Campaign has one or more Reports of type Report
         modelBuilder.Entity<Report>()
             .HasOne<Campaign>()
             .WithMany(parent => parent.Reports)
-            .HasForeignKey("Reports_Id");
+            .HasForeignKey("Campaign_Id");
 
         // KPI has one Campaign of type Campaign
         modelBuilder.Entity<KPI>()
@@ -277,14 +277,14 @@ public DbSet<GeoRegion> GeoRegions => Set<GeoRegion>();
         modelBuilder.Entity<Campaign>()
             .HasOne<AudienceSegment>()
             .WithMany(parent => parent.Campaigns)
-            .HasForeignKey("Campaigns_Id");
+            .HasForeignKey("AudienceSegment_Id");
 
 
         // DataProvider has one or more AudienceSegments of type AudienceSegment
         modelBuilder.Entity<AudienceSegment>()
             .HasOne<DataProvider>()
             .WithMany(parent => parent.AudienceSegments)
-            .HasForeignKey("AudienceSegments_Id");
+            .HasForeignKey("DataProvider_Id");
 
         // LineItem has one Campaign of type Campaign
         modelBuilder.Entity<LineItem>()
@@ -309,19 +309,19 @@ public DbSet<GeoRegion> GeoRegions => Set<GeoRegion>();
         modelBuilder.Entity<Placement>()
             .HasOne<LineItem>()
             .WithMany(parent => parent.Placements)
-            .HasForeignKey("Placements_Id");
+            .HasForeignKey("LineItem_Id");
 
         // LineItem has one or more Creatives of type CreativeAsset
         modelBuilder.Entity<CreativeAsset>()
             .HasOne<LineItem>()
             .WithMany(parent => parent.Creatives)
-            .HasForeignKey("Creatives_Id");
+            .HasForeignKey("LineItem_Id");
 
         // LineItem has one or more PerformanceMetrics of type PerformanceMetric
         modelBuilder.Entity<PerformanceMetric>()
             .HasOne<LineItem>()
             .WithMany(parent => parent.PerformanceMetrics)
-            .HasForeignKey("PerformanceMetrics_Id");
+            .HasForeignKey("LineItem_Id");
 
         // TargetingProfile has one BrandSafetyPolicy of type BrandSafetyPolicy
         modelBuilder.Entity<TargetingProfile>()
@@ -334,25 +334,25 @@ public DbSet<GeoRegion> GeoRegions => Set<GeoRegion>();
         modelBuilder.Entity<AudienceSegment>()
             .HasOne<TargetingProfile>()
             .WithMany(parent => parent.AudienceSegments)
-            .HasForeignKey("AudienceSegments_Id");
+            .HasForeignKey("TargetingProfile_Id");
 
         // TargetingProfile has one or more GeoRegions of type GeoRegion
         modelBuilder.Entity<GeoRegion>()
             .HasOne<TargetingProfile>()
             .WithMany(parent => parent.GeoRegions)
-            .HasForeignKey("GeoRegions_Id");
+            .HasForeignKey("TargetingProfile_Id");
 
         // TargetingProfile has one or more ContentCategories of type ContentCategory
         modelBuilder.Entity<ContentCategory>()
             .HasOne<TargetingProfile>()
             .WithMany(parent => parent.ContentCategories)
-            .HasForeignKey("ContentCategories_Id");
+            .HasForeignKey("TargetingProfile_Id");
 
         // TargetingProfile has one or more DeviceCriteria of type DeviceCriterion
         modelBuilder.Entity<DeviceCriterion>()
             .HasOne<TargetingProfile>()
             .WithMany(parent => parent.DeviceCriteria)
-            .HasForeignKey("DeviceCriteria_Id");
+            .HasForeignKey("TargetingProfile_Id");
 
         // DeviceCriterion has one TargetingProfile of type TargetingProfile
         modelBuilder.Entity<DeviceCriterion>()
@@ -366,7 +366,7 @@ public DbSet<GeoRegion> GeoRegions => Set<GeoRegion>();
         modelBuilder.Entity<TargetingProfile>()
             .HasOne<BrandSafetyPolicy>()
             .WithMany(parent => parent.TargetingProfiles)
-            .HasForeignKey("TargetingProfiles_Id");
+            .HasForeignKey("BrandSafetyPolicy_Id");
 
 
 
@@ -374,31 +374,31 @@ public DbSet<GeoRegion> GeoRegions => Set<GeoRegion>();
         modelBuilder.Entity<InventorySource>()
             .HasOne<Publisher>()
             .WithMany(parent => parent.InventorySources)
-            .HasForeignKey("InventorySources_Id");
+            .HasForeignKey("Publisher_Id");
 
         // Publisher has one or more Deals of type Deal
         modelBuilder.Entity<Deal>()
             .HasOne<Publisher>()
             .WithMany(parent => parent.Deals)
-            .HasForeignKey("Deals_Id");
+            .HasForeignKey("Publisher_Id");
 
         // Publisher has one or more CreativeApprovals of type CreativeApproval
         modelBuilder.Entity<CreativeApproval>()
             .HasOne<Publisher>()
             .WithMany(parent => parent.CreativeApprovals)
-            .HasForeignKey("CreativeApprovals_Id");
+            .HasForeignKey("Publisher_Id");
 
         // Publisher has one or more InsertionOrders of type InsertionOrder
         modelBuilder.Entity<InsertionOrder>()
             .HasOne<Publisher>()
             .WithMany(parent => parent.InsertionOrders)
-            .HasForeignKey("InsertionOrders_Id");
+            .HasForeignKey("Publisher_Id");
 
         // Publisher has one or more RateCards of type RateCard
         modelBuilder.Entity<RateCard>()
             .HasOne<Publisher>()
             .WithMany(parent => parent.RateCards)
-            .HasForeignKey("RateCards_Id");
+            .HasForeignKey("Publisher_Id");
 
         // InventorySource has one Publisher of type Publisher
         modelBuilder.Entity<InventorySource>()
@@ -411,13 +411,13 @@ public DbSet<GeoRegion> GeoRegions => Set<GeoRegion>();
         modelBuilder.Entity<AdSlot>()
             .HasOne<InventorySource>()
             .WithMany(parent => parent.AdSlots)
-            .HasForeignKey("AdSlots_Id");
+            .HasForeignKey("InventorySource_Id");
 
         // InventorySource has one or more Deals of type Deal
         modelBuilder.Entity<Deal>()
             .HasOne<InventorySource>()
             .WithMany(parent => parent.Deals)
-            .HasForeignKey("Deals_Id");
+            .HasForeignKey("InventorySource_Id");
 
         // AdSlot has one InventorySource of type InventorySource
         modelBuilder.Entity<AdSlot>()
@@ -430,13 +430,13 @@ public DbSet<GeoRegion> GeoRegions => Set<GeoRegion>();
         modelBuilder.Entity<Placement>()
             .HasOne<AdSlot>()
             .WithMany(parent => parent.Placements)
-            .HasForeignKey("Placements_Id");
+            .HasForeignKey("AdSlot_Id");
 
         // AdSlot has one or more Rates of type Rate
         modelBuilder.Entity<Rate>()
             .HasOne<AdSlot>()
             .WithMany(parent => parent.Rates)
-            .HasForeignKey("Rates_Id");
+            .HasForeignKey("AdSlot_Id");
 
         // Deal has one Publisher of type Publisher
         modelBuilder.Entity<Deal>()
@@ -449,13 +449,13 @@ public DbSet<GeoRegion> GeoRegions => Set<GeoRegion>();
         modelBuilder.Entity<InventorySource>()
             .HasOne<Deal>()
             .WithMany(parent => parent.InventorySources)
-            .HasForeignKey("InventorySources_Id");
+            .HasForeignKey("Deal_Id");
 
         // Deal has one or more Placements of type Placement
         modelBuilder.Entity<Placement>()
             .HasOne<Deal>()
             .WithMany(parent => parent.Placements)
-            .HasForeignKey("Placements_Id");
+            .HasForeignKey("Deal_Id");
 
         // Placement has one LineItem of type LineItem
         modelBuilder.Entity<Placement>()
@@ -481,25 +481,25 @@ public DbSet<GeoRegion> GeoRegions => Set<GeoRegion>();
         modelBuilder.Entity<CreativeFile>()
             .HasOne<CreativeAsset>()
             .WithMany(parent => parent.Files)
-            .HasForeignKey("Files_Id");
+            .HasForeignKey("CreativeAsset_Id");
 
         // CreativeAsset has one or more Approvals of type CreativeApproval
         modelBuilder.Entity<CreativeApproval>()
             .HasOne<CreativeAsset>()
             .WithMany(parent => parent.Approvals)
-            .HasForeignKey("Approvals_Id");
+            .HasForeignKey("CreativeAsset_Id");
 
         // CreativeAsset has one or more Variations of type CreativeVariation
         modelBuilder.Entity<CreativeVariation>()
             .HasOne<CreativeAsset>()
             .WithMany(parent => parent.Variations)
-            .HasForeignKey("Variations_Id");
+            .HasForeignKey("CreativeAsset_Id");
 
         // CreativeAsset has one or more LineItems of type LineItem
         modelBuilder.Entity<LineItem>()
             .HasOne<CreativeAsset>()
             .WithMany(parent => parent.LineItems)
-            .HasForeignKey("LineItems_Id");
+            .HasForeignKey("CreativeAsset_Id");
 
         // CreativeFile has one CreativeAsset of type CreativeAsset
         modelBuilder.Entity<CreativeFile>()
@@ -545,7 +545,7 @@ public DbSet<GeoRegion> GeoRegions => Set<GeoRegion>();
         modelBuilder.Entity<ConversionEvent>()
             .HasOne<TrackingPixel>()
             .WithMany(parent => parent.ConversionEvents)
-            .HasForeignKey("ConversionEvents_Id");
+            .HasForeignKey("TrackingPixel_Id");
 
         // ConversionEvent has one Campaign of type Campaign
         modelBuilder.Entity<ConversionEvent>()
@@ -639,7 +639,7 @@ public DbSet<GeoRegion> GeoRegions => Set<GeoRegion>();
         modelBuilder.Entity<Campaign>()
             .HasOne<InsertionOrder>()
             .WithMany(parent => parent.Campaigns)
-            .HasForeignKey("Campaigns_Id");
+            .HasForeignKey("InsertionOrder_Id");
 
         // RateCard has one Publisher of type Publisher
         modelBuilder.Entity<RateCard>()
@@ -652,7 +652,7 @@ public DbSet<GeoRegion> GeoRegions => Set<GeoRegion>();
         modelBuilder.Entity<Rate>()
             .HasOne<RateCard>()
             .WithMany(parent => parent.Rates)
-            .HasForeignKey("Rates_Id");
+            .HasForeignKey("RateCard_Id");
 
         // Rate has one RateCard of type RateCard
         modelBuilder.Entity<Rate>()
@@ -678,7 +678,7 @@ public DbSet<GeoRegion> GeoRegions => Set<GeoRegion>();
         modelBuilder.Entity<ExperimentVariant>()
             .HasOne<Experiment>()
             .WithMany(parent => parent.Variants)
-            .HasForeignKey("Variants_Id");
+            .HasForeignKey("Experiment_Id");
 
         // ExperimentVariant has one Experiment of type Experiment
         modelBuilder.Entity<ExperimentVariant>()
@@ -710,7 +710,7 @@ public DbSet<GeoRegion> GeoRegions => Set<GeoRegion>();
         modelBuilder.Entity<GeoRegion>()
             .HasOne<GeoRegion>()
             .WithMany(parent => parent.Children)
-            .HasForeignKey("Children_Id");
+            .HasForeignKey("GeoRegion_Id");
 
     }
 }

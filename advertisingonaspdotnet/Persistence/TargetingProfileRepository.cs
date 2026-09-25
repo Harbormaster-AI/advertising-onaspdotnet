@@ -1,4 +1,7 @@
+
+using advertisingonaspdotnet.Contracts;
 using advertisingonaspdotnet.Domain;
+
 using Microsoft.EntityFrameworkCore;
 
 namespace advertisingonaspdotnet.Persistence;
@@ -44,4 +47,149 @@ public class TargetingProfileRepository : ITargetingProfileRepository
         _db.TargetingProfiles.Remove(targetingProfile);
         await _db.SaveChangesAsync(cancellationToken);
     }
+
+
+    public async Task AddToAudienceSegmentsAsync(
+        MultipleAssociationRequest request,
+        CancellationToken cancellationToken)
+    {
+        await _db.AudienceSegments
+            .Where(audienceSegment =>
+                request.ChildIds.Contains(audienceSegment.Id))
+            .ExecuteUpdateAsync(setters =>
+                setters.SetProperty(
+                    audienceSegment =>
+                        EF.Property<Guid?>(
+                            audienceSegment,
+                            "GeoRegion_Id"),
+                    request.ParentId));
+    }
+
+    public async Task RemoveFromAudienceSegmentsAsync(
+        MultipleAssociationRequest request,
+        CancellationToken cancellationToken)
+    {
+        await _db.AudienceSegments
+            .Where(audienceSegment =>
+                request.ChildIds.Contains(audienceSegment.Id) &&
+                EF.Property<Guid?>(
+                    audienceSegment,
+                    "GeoRegion_Id") == request.ParentId)
+            .ExecuteUpdateAsync(setters =>
+                setters.SetProperty(
+                    audienceSegment =>
+                        EF.Property<Guid?>(
+                            audienceSegment,
+                            "GeoRegion_Id"),
+                    (Guid?)null));
+    }
+
+
+    public async Task AddToGeoRegionsAsync(
+        MultipleAssociationRequest request,
+        CancellationToken cancellationToken)
+    {
+        await _db.GeoRegions
+            .Where(geoRegion =>
+                request.ChildIds.Contains(geoRegion.Id))
+            .ExecuteUpdateAsync(setters =>
+                setters.SetProperty(
+                    geoRegion =>
+                        EF.Property<Guid?>(
+                            geoRegion,
+                            "GeoRegion_Id"),
+                    request.ParentId));
+    }
+
+    public async Task RemoveFromGeoRegionsAsync(
+        MultipleAssociationRequest request,
+        CancellationToken cancellationToken)
+    {
+        await _db.GeoRegions
+            .Where(geoRegion =>
+                request.ChildIds.Contains(geoRegion.Id) &&
+                EF.Property<Guid?>(
+                    geoRegion,
+                    "GeoRegion_Id") == request.ParentId)
+            .ExecuteUpdateAsync(setters =>
+                setters.SetProperty(
+                    geoRegion =>
+                        EF.Property<Guid?>(
+                            geoRegion,
+                            "GeoRegion_Id"),
+                    (Guid?)null));
+    }
+
+
+    public async Task AddToContentCategoriesAsync(
+        MultipleAssociationRequest request,
+        CancellationToken cancellationToken)
+    {
+        await _db.ContentCategorys
+            .Where(contentCategory =>
+                request.ChildIds.Contains(contentCategory.Id))
+            .ExecuteUpdateAsync(setters =>
+                setters.SetProperty(
+                    contentCategory =>
+                        EF.Property<Guid?>(
+                            contentCategory,
+                            "GeoRegion_Id"),
+                    request.ParentId));
+    }
+
+    public async Task RemoveFromContentCategoriesAsync(
+        MultipleAssociationRequest request,
+        CancellationToken cancellationToken)
+    {
+        await _db.ContentCategorys
+            .Where(contentCategory =>
+                request.ChildIds.Contains(contentCategory.Id) &&
+                EF.Property<Guid?>(
+                    contentCategory,
+                    "GeoRegion_Id") == request.ParentId)
+            .ExecuteUpdateAsync(setters =>
+                setters.SetProperty(
+                    contentCategory =>
+                        EF.Property<Guid?>(
+                            contentCategory,
+                            "GeoRegion_Id"),
+                    (Guid?)null));
+    }
+
+
+    public async Task AddToDeviceCriteriaAsync(
+        MultipleAssociationRequest request,
+        CancellationToken cancellationToken)
+    {
+        await _db.DeviceCriterions
+            .Where(deviceCriterion =>
+                request.ChildIds.Contains(deviceCriterion.Id))
+            .ExecuteUpdateAsync(setters =>
+                setters.SetProperty(
+                    deviceCriterion =>
+                        EF.Property<Guid?>(
+                            deviceCriterion,
+                            "GeoRegion_Id"),
+                    request.ParentId));
+    }
+
+    public async Task RemoveFromDeviceCriteriaAsync(
+        MultipleAssociationRequest request,
+        CancellationToken cancellationToken)
+    {
+        await _db.DeviceCriterions
+            .Where(deviceCriterion =>
+                request.ChildIds.Contains(deviceCriterion.Id) &&
+                EF.Property<Guid?>(
+                    deviceCriterion,
+                    "GeoRegion_Id") == request.ParentId)
+            .ExecuteUpdateAsync(setters =>
+                setters.SetProperty(
+                    deviceCriterion =>
+                        EF.Property<Guid?>(
+                            deviceCriterion,
+                            "GeoRegion_Id"),
+                    (Guid?)null));
+    }
+
 }

@@ -1,4 +1,7 @@
+
+using advertisingonaspdotnet.Contracts;
 using advertisingonaspdotnet.Domain;
+
 using Microsoft.EntityFrameworkCore;
 
 namespace advertisingonaspdotnet.Persistence;
@@ -42,4 +45,41 @@ public class DataProviderRepository : IDataProviderRepository
         _db.DataProviders.Remove(dataProvider);
         await _db.SaveChangesAsync(cancellationToken);
     }
+
+
+    public async Task AddToAudienceSegmentsAsync(
+        MultipleAssociationRequest request,
+        CancellationToken cancellationToken)
+    {
+        await _db.AudienceSegments
+            .Where(audienceSegment =>
+                request.ChildIds.Contains(audienceSegment.Id))
+            .ExecuteUpdateAsync(setters =>
+                setters.SetProperty(
+                    audienceSegment =>
+                        EF.Property<Guid?>(
+                            audienceSegment,
+                            "GeoRegion_Id"),
+                    request.ParentId));
+    }
+
+    public async Task RemoveFromAudienceSegmentsAsync(
+        MultipleAssociationRequest request,
+        CancellationToken cancellationToken)
+    {
+        await _db.AudienceSegments
+            .Where(audienceSegment =>
+                request.ChildIds.Contains(audienceSegment.Id) &&
+                EF.Property<Guid?>(
+                    audienceSegment,
+                    "GeoRegion_Id") == request.ParentId)
+            .ExecuteUpdateAsync(setters =>
+                setters.SetProperty(
+                    audienceSegment =>
+                        EF.Property<Guid?>(
+                            audienceSegment,
+                            "GeoRegion_Id"),
+                    (Guid?)null));
+    }
+
 }
